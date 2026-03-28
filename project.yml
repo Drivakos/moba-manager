@@ -1,0 +1,37 @@
+name: mobaManager
+options:
+  bundleIdPrefix: com.drivakos
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+targets:
+  mobaManager:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.drivakos.mobaManager
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "5.10"
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_STRICT_CONCURRENCY: minimal
+        ENABLE_PREVIEWS: "YES"
+    info:
+      path: Sources/Info.plist
+      properties:
+        UILaunchScreen:
+          UIColorName: ""
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UIStatusBarHidden: true
+        UIRequiresFullScreen: true
+    dependencies:
+      - sdk: SpriteKit.framework
+      - sdk: GameplayKit.framework

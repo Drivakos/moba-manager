@@ -1,0 +1,455 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		04BCB041370AA93490E98D05 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 447D14BB6639D0F43E4DE390 /* Player.swift */; };
+		04E2AFDDB457D9E71E09F562 /* MatchSimView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 159B468DC8271A5A68FCF42B /* MatchSimView.swift */; };
+		06503B8F2F4725746071C8CD /* DPadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE9F9064E07ED7EAE6A379E7 /* DPadView.swift */; };
+		08633D2A69F73C7146987338 /* NPCNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31661A9DC6040D2761104601 /* NPCNode.swift */; };
+		088B61CAE4790D9A3F61AE7C /* SpriteKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C35A4635FD008B2DD675F127 /* SpriteKit.framework */; };
+		0A08A1AAE36A96B6D090B1DD /* OverworldScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B969642307738B8F88F28F /* OverworldScene.swift */; };
+		0EBAF2FCBD8568B7D10F5DB0 /* DialogueBoxNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FFA3EB59B9C88BCDBCF68CC /* DialogueBoxNode.swift */; };
+		10B79080930615B06440155A /* CharacterNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BF0AC6A36B75E49926EFE20 /* CharacterNode.swift */; };
+		142ED759B3E3E71B21D635EB /* SaveManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E12CF40A30EBA41EF169B9 /* SaveManager.swift */; };
+		27F3981B53C4222F6729C288 /* TournamentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE6A08EB6E1AA1D160DDB92 /* TournamentView.swift */; };
+		2AAE9790637EB5323D255A31 /* mobaManagerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89EA8865E8111CCC556AEDB0 /* mobaManagerApp.swift */; };
+		2F842B778241423E13E1D627 /* TacticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B991E81EECE5F1CE155F0FE /* TacticsView.swift */; };
+		3798016BC0B6EC6EBAECC5C4 /* DraftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B15A24885F97601F566162D8 /* DraftView.swift */; };
+		3AC5BC71111A82413F0EA2FD /* OverworldContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 911B5CC0B1781F7B842F1C35 /* OverworldContainerView.swift */; };
+		4A13E65AD0FC9CB90B462B7C /* TitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25533BF8487A006D1CE0D6D /* TitleView.swift */; };
+		4C93663472D7280346288DC6 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FD95CADD5D65CD0803DFA0F /* Constants.swift */; };
+		53F9CE9EE91F9BB21F2418D1 /* CoachHireView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4E35B467878BA3C0BBBF0B /* CoachHireView.swift */; };
+		5D7F6678BE0785C100750409 /* Match.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B3717BA823FE82EC997F0EE /* Match.swift */; };
+		602D0C432203D46F0C5CDC5D /* TeamRosterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 891B31C9FBFA4C07B461B4D2 /* TeamRosterView.swift */; };
+		630E7874F313A777A3B8A96D /* Coach.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25B52C9F89C89D4384F3DE0 /* Coach.swift */; };
+		654446C6CAE0CF8E0CB5C8E2 /* TeamSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2598FE048AB70EEA2FF68E /* TeamSetupView.swift */; };
+		6B1A6569AFDEEF181F603E90 /* Team.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E3D8C27728060AF2D44F77 /* Team.swift */; };
+		6DE144DE919FDE3F23E91D14 /* SaveLoadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E44E521DDDB53AE6EBA4435 /* SaveLoadView.swift */; };
+		7E945E0874569BB09A6B9C65 /* GameplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF0CCCC001F8692F4882B95 /* GameplayKit.framework */; };
+		80D972F15EAE67DFD062F848 /* StoryEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF0E4C55E35327B1A27EECC /* StoryEvents.swift */; };
+		91438A5406DC7FEFD4DE5C4F /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9772769B4734DFC2EF6F2D7 /* GameState.swift */; };
+		CA7D9586080FE9D70EFBD645 /* TrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8E79075E4A3961984D52AD /* TrainingView.swift */; };
+		D7AE648C634A3C7A80EC4B03 /* EncounterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E82616ABCC41600F80332B8 /* EncounterView.swift */; };
+		E8B3B1C1818394BF58EBADD7 /* MapData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB9C8E622E25D4E8FD20CA14 /* MapData.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0AF0CCCC001F8692F4882B95 /* GameplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameplayKit.framework; path = System/Library/Frameworks/GameplayKit.framework; sourceTree = SDKROOT; };
+		159B468DC8271A5A68FCF42B /* MatchSimView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchSimView.swift; sourceTree = "<group>"; };
+		1BF0AC6A36B75E49926EFE20 /* CharacterNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterNode.swift; sourceTree = "<group>"; };
+		2B3717BA823FE82EC997F0EE /* Match.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Match.swift; sourceTree = "<group>"; };
+		31661A9DC6040D2761104601 /* NPCNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPCNode.swift; sourceTree = "<group>"; };
+		31B969642307738B8F88F28F /* OverworldScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverworldScene.swift; sourceTree = "<group>"; };
+		3E82616ABCC41600F80332B8 /* EncounterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterView.swift; sourceTree = "<group>"; };
+		3FD95CADD5D65CD0803DFA0F /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		447D14BB6639D0F43E4DE390 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		4C4E35B467878BA3C0BBBF0B /* CoachHireView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachHireView.swift; sourceTree = "<group>"; };
+		4E44E521DDDB53AE6EBA4435 /* SaveLoadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveLoadView.swift; sourceTree = "<group>"; };
+		50213250654624266225021B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		6BE6A08EB6E1AA1D160DDB92 /* TournamentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TournamentView.swift; sourceTree = "<group>"; };
+		7B991E81EECE5F1CE155F0FE /* TacticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TacticsView.swift; sourceTree = "<group>"; };
+		7F8E79075E4A3961984D52AD /* TrainingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingView.swift; sourceTree = "<group>"; };
+		84E12CF40A30EBA41EF169B9 /* SaveManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveManager.swift; sourceTree = "<group>"; };
+		891B31C9FBFA4C07B461B4D2 /* TeamRosterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamRosterView.swift; sourceTree = "<group>"; };
+		89EA8865E8111CCC556AEDB0 /* mobaManagerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mobaManagerApp.swift; sourceTree = "<group>"; };
+		8FFA3EB59B9C88BCDBCF68CC /* DialogueBoxNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogueBoxNode.swift; sourceTree = "<group>"; };
+		911B5CC0B1781F7B842F1C35 /* OverworldContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverworldContainerView.swift; sourceTree = "<group>"; };
+		96E3D8C27728060AF2D44F77 /* Team.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Team.swift; sourceTree = "<group>"; };
+		AA2598FE048AB70EEA2FF68E /* TeamSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamSetupView.swift; sourceTree = "<group>"; };
+		AB9C8E622E25D4E8FD20CA14 /* MapData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapData.swift; sourceTree = "<group>"; };
+		B15A24885F97601F566162D8 /* DraftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftView.swift; sourceTree = "<group>"; };
+		BE9F9064E07ED7EAE6A379E7 /* DPadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DPadView.swift; sourceTree = "<group>"; };
+		C35A4635FD008B2DD675F127 /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
+		D25B52C9F89C89D4384F3DE0 /* Coach.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coach.swift; sourceTree = "<group>"; };
+		E25533BF8487A006D1CE0D6D /* TitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleView.swift; sourceTree = "<group>"; };
+		E9772769B4734DFC2EF6F2D7 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
+		EB57B1808A9B06CCE8ECF669 /* mobaManager.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = mobaManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FEF0E4C55E35327B1A27EECC /* StoryEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryEvents.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		60F80A8E88EE0F05D57CDDCA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				088B61CAE4790D9A3F61AE7C /* SpriteKit.framework in Frameworks */,
+				7E945E0874569BB09A6B9C65 /* GameplayKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0E652B3CCEFDA9BDFCBFED57 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				6F15CBB11B5439D21052C23B /* Core */,
+				E7ABE423F4C7AB4F41D6D27C /* Models */,
+				2F8AF403F631C8EF7233CD00 /* Overworld */,
+				56D01836130F0BE8C696AE9B /* Views */,
+				50213250654624266225021B /* Info.plist */,
+				89EA8865E8111CCC556AEDB0 /* mobaManagerApp.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		0FAE0E434D2EE1D15964F012 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0AF0CCCC001F8692F4882B95 /* GameplayKit.framework */,
+				C35A4635FD008B2DD675F127 /* SpriteKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2F8AF403F631C8EF7233CD00 /* Overworld */ = {
+			isa = PBXGroup;
+			children = (
+				1BF0AC6A36B75E49926EFE20 /* CharacterNode.swift */,
+				8FFA3EB59B9C88BCDBCF68CC /* DialogueBoxNode.swift */,
+				AB9C8E622E25D4E8FD20CA14 /* MapData.swift */,
+				31661A9DC6040D2761104601 /* NPCNode.swift */,
+				31B969642307738B8F88F28F /* OverworldScene.swift */,
+			);
+			path = Overworld;
+			sourceTree = "<group>";
+		};
+		56D01836130F0BE8C696AE9B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4C4E35B467878BA3C0BBBF0B /* CoachHireView.swift */,
+				BE9F9064E07ED7EAE6A379E7 /* DPadView.swift */,
+				B15A24885F97601F566162D8 /* DraftView.swift */,
+				3E82616ABCC41600F80332B8 /* EncounterView.swift */,
+				159B468DC8271A5A68FCF42B /* MatchSimView.swift */,
+				911B5CC0B1781F7B842F1C35 /* OverworldContainerView.swift */,
+				4E44E521DDDB53AE6EBA4435 /* SaveLoadView.swift */,
+				7B991E81EECE5F1CE155F0FE /* TacticsView.swift */,
+				891B31C9FBFA4C07B461B4D2 /* TeamRosterView.swift */,
+				AA2598FE048AB70EEA2FF68E /* TeamSetupView.swift */,
+				E25533BF8487A006D1CE0D6D /* TitleView.swift */,
+				6BE6A08EB6E1AA1D160DDB92 /* TournamentView.swift */,
+				7F8E79075E4A3961984D52AD /* TrainingView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		6F15CBB11B5439D21052C23B /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				3FD95CADD5D65CD0803DFA0F /* Constants.swift */,
+				E9772769B4734DFC2EF6F2D7 /* GameState.swift */,
+				84E12CF40A30EBA41EF169B9 /* SaveManager.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		E791CC8FE4E2460A8293306B = {
+			isa = PBXGroup;
+			children = (
+				0E652B3CCEFDA9BDFCBFED57 /* Sources */,
+				0FAE0E434D2EE1D15964F012 /* Frameworks */,
+				F3AB509D34B96B387A9DB6DE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E7ABE423F4C7AB4F41D6D27C /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				D25B52C9F89C89D4384F3DE0 /* Coach.swift */,
+				2B3717BA823FE82EC997F0EE /* Match.swift */,
+				447D14BB6639D0F43E4DE390 /* Player.swift */,
+				FEF0E4C55E35327B1A27EECC /* StoryEvents.swift */,
+				96E3D8C27728060AF2D44F77 /* Team.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F3AB509D34B96B387A9DB6DE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EB57B1808A9B06CCE8ECF669 /* mobaManager.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		277E9682C0B21FBDF290D1CC /* mobaManager */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4DFB2562F202ED89A252AC46 /* Build configuration list for PBXNativeTarget "mobaManager" */;
+			buildPhases = (
+				74ED5A865C4139FEA9F351AF /* Sources */,
+				60F80A8E88EE0F05D57CDDCA /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = mobaManager;
+			packageProductDependencies = (
+			);
+			productName = mobaManager;
+			productReference = EB57B1808A9B06CCE8ECF669 /* mobaManager.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A96152B1CE8711D167FC8618 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = C91AB1367FBBF6EA20D7556F /* Build configuration list for PBXProject "mobaManager" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = E791CC8FE4E2460A8293306B;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F3AB509D34B96B387A9DB6DE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				277E9682C0B21FBDF290D1CC /* mobaManager */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		74ED5A865C4139FEA9F351AF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				10B79080930615B06440155A /* CharacterNode.swift in Sources */,
+				630E7874F313A777A3B8A96D /* Coach.swift in Sources */,
+				53F9CE9EE91F9BB21F2418D1 /* CoachHireView.swift in Sources */,
+				4C93663472D7280346288DC6 /* Constants.swift in Sources */,
+				06503B8F2F4725746071C8CD /* DPadView.swift in Sources */,
+				0EBAF2FCBD8568B7D10F5DB0 /* DialogueBoxNode.swift in Sources */,
+				3798016BC0B6EC6EBAECC5C4 /* DraftView.swift in Sources */,
+				D7AE648C634A3C7A80EC4B03 /* EncounterView.swift in Sources */,
+				91438A5406DC7FEFD4DE5C4F /* GameState.swift in Sources */,
+				E8B3B1C1818394BF58EBADD7 /* MapData.swift in Sources */,
+				5D7F6678BE0785C100750409 /* Match.swift in Sources */,
+				04E2AFDDB457D9E71E09F562 /* MatchSimView.swift in Sources */,
+				08633D2A69F73C7146987338 /* NPCNode.swift in Sources */,
+				3AC5BC71111A82413F0EA2FD /* OverworldContainerView.swift in Sources */,
+				0A08A1AAE36A96B6D090B1DD /* OverworldScene.swift in Sources */,
+				04BCB041370AA93490E98D05 /* Player.swift in Sources */,
+				6DE144DE919FDE3F23E91D14 /* SaveLoadView.swift in Sources */,
+				142ED759B3E3E71B21D635EB /* SaveManager.swift in Sources */,
+				80D972F15EAE67DFD062F848 /* StoryEvents.swift in Sources */,
+				2F842B778241423E13E1D627 /* TacticsView.swift in Sources */,
+				6B1A6569AFDEEF181F603E90 /* Team.swift in Sources */,
+				602D0C432203D46F0C5CDC5D /* TeamRosterView.swift in Sources */,
+				654446C6CAE0CF8E0CB5C8E2 /* TeamSetupView.swift in Sources */,
+				4A13E65AD0FC9CB90B462B7C /* TitleView.swift in Sources */,
+				27F3981B53C4222F6729C288 /* TournamentView.swift in Sources */,
+				CA7D9586080FE9D70EFBD645 /* TrainingView.swift in Sources */,
+				2AAE9790637EB5323D255A31 /* mobaManagerApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0C8217F285C32B17B6FE2BF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = Sources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.drivakos.mobaManager;
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.10;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		9BD704E054BE2C688FA9E9C4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		B315EE43C5D28CDD7A917ABB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = Sources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.drivakos.mobaManager;
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.10;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		DE515A4473F552349CD64CB8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4DFB2562F202ED89A252AC46 /* Build configuration list for PBXNativeTarget "mobaManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0C8217F285C32B17B6FE2BF2 /* Debug */,
+				B315EE43C5D28CDD7A917ABB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C91AB1367FBBF6EA20D7556F /* Build configuration list for PBXProject "mobaManager" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DE515A4473F552349CD64CB8 /* Debug */,
+				9BD704E054BE2C688FA9E9C4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A96152B1CE8711D167FC8618 /* Project object */;
+}
