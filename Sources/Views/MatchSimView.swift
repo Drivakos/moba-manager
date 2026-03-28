@@ -165,22 +165,69 @@ struct MatchSimView: View {
     func resultScreen(_ r: MatchResult) -> some View {
         VStack(spacing: 0) {
             ZStack {
-                (r.won ? Color.gbDark : Color(red: 0.06, green: 0.10, blue: 0.06))
-                VStack(spacing: 6) {
-                    Text(r.won ? "VICTORY!" : "DEFEAT")
-                        .font(.custom(GB.font, size: 34))
-                        .foregroundColor(r.won ? .gbLightest : .gbLight)
-                    if let mvp = r.mvpName {
-                        Text("MVP: 「\(mvp)」")
-                            .font(.custom(GB.fontMono, size: 13))
-                            .foregroundColor(.gbLight)
-                    }
-                    Text(r.won ? "+$5,000  +50 XP" : "+$1,500  +20 XP")
-                        .font(.custom(GB.fontMono, size: 11))
+                (r.won ? Color.gbDark : Color(red: 0.04, green: 0.09, blue: 0.04))
+
+                // Scanlines over result banner
+                GBScanlineView(opacity: 0.12)
+
+                VStack(spacing: 0) {
+                    // Decorative top stripe
+                    Rectangle()
+                        .fill(r.won ? Color.gbLightest : Color.gbDark)
+                        .frame(height: 3)
+
+                    Spacer()
+
+                    // Big result text
+                    VStack(spacing: 5) {
+                        Text(r.won ? "VICTORY!" : "DEFEAT")
+                            .font(.custom(GB.font, size: 40))
+                            .foregroundColor(r.won ? .gbLightest : .gbLight)
+                            .shadow(color: r.won ? .gbDarkest : .black, radius: 0, x: 3, y: 3)
+                            .overlay(
+                                GBCornerBorder(color: r.won ? .gbLightest.opacity(0.3) : .gbDark.opacity(0.3), lineWidth: 1, cornerSize: 8)
+                                    .padding(-8)
+                            )
+
+                        if let mvp = r.mvpName {
+                            Text("MVP  ·  「\(mvp)」")
+                                .font(.custom(GB.fontMono, size: 12))
+                                .foregroundColor(.gbLight)
+                                .padding(.top, 4)
+                        }
+
+                        HStack(spacing: 16) {
+                            Label(r.won ? "+$5,000" : "+$1,500", systemImage: "dollarsign")
+                            Label(r.won ? "+50 XP" : "+20 XP", systemImage: "bolt.fill")
+                        }
+                        .font(.custom(GB.fontMono, size: 10))
                         .foregroundColor(.gbDark)
+                        .padding(.top, 2)
+                        .labelStyle(.titleAndIcon)
+                    }
+
+                    Spacer()
+
+                    // Score display
+                    HStack(spacing: 0) {
+                        Text(gameState.playerTeam.name.uppercased())
+                            .font(.custom(GB.fontMono, size: 9))
+                            .foregroundColor(.gbLight)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.trailing, 10)
+                        Text("\(r.playerScore) — \(r.opponentScore)")
+                            .font(.custom(GB.font, size: 20))
+                            .foregroundColor(.gbLightest)
+                        Text(opponent.name.uppercased())
+                            .font(.custom(GB.fontMono, size: 9))
+                            .foregroundColor(.gbDark)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading, 10)
+                    }
+                    .padding(.bottom, 8)
                 }
             }
-            .frame(height: 100)
+            .frame(height: 130)
 
             Divider().background(Color.gbLight)
 
@@ -198,13 +245,18 @@ struct MatchSimView: View {
                 gameState.activeOpponent = nil
                 gameState.screen = .overworld
             } label: {
-                Text("CONTINUE ▶")
+                Text("CONTINUE  ▶")
                     .font(.custom(GB.font, size: 15))
                     .foregroundColor(.gbLightest)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .background(r.won ? Color.gbDark : Color.gbDarkest)
-                    .overlay(Rectangle().stroke(Color.gbLight, lineWidth: 2))
+                    .overlay(
+                        ZStack {
+                            Rectangle().stroke(Color.gbLight, lineWidth: 2)
+                            GBCornerBorder(color: .gbLight, lineWidth: 1, cornerSize: 8)
+                        }
+                    )
             }
             .buttonStyle(.plain)
             .padding(.horizontal, 14)
@@ -307,24 +359,36 @@ struct EventRowView: View {
     let event: MatchEvent
 
     var body: some View {
-        HStack(alignment: .top, spacing: 8) {
-            Text(event.isPositive ? "▶" : "✕")
-                .font(.custom(GB.font, size: 10))
-                .foregroundColor(event.isPositive ? .gbLightest : .gbDark)
-                .padding(.top, 1)
+        HStack(spacing: 0) {
+            // Colored left accent
+            Rectangle()
+                .fill(event.isPositive ? Color.gbLightest : Color.gbDark)
+                .frame(width: 3)
 
-            VStack(alignment: .leading, spacing: 1) {
-                Text("[\(event.phase.rawValue)]")
+            HStack(alignment: .top, spacing: 8) {
+                Text(event.isPositive ? "▶" : "✕")
                     .font(.custom(GB.font, size: 9))
-                    .foregroundColor(.gbDark)
-                Text(event.text)
-                    .font(.custom(GB.fontMono, size: 11))
-                    .foregroundColor(event.isPositive ? .gbLightest : .gbLight)
+                    .foregroundColor(event.isPositive ? .gbLightest : .gbDark)
+                    .padding(.top, 2)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(event.phase.rawValue.uppercased())
+                        .font(.custom(GB.font, size: 8))
+                        .foregroundColor(.gbDark)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 1)
+                        .background(Color.gbDarkest)
+                    Text(event.text)
+                        .font(.custom(GB.fontMono, size: 11))
+                        .foregroundColor(event.isPositive ? .gbLightest : .gbLight)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 7)
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 6)
-        .background(Color.gbDark.opacity(event.isPositive ? 0.6 : 0.3))
-        .overlay(Rectangle().stroke(event.isPositive ? Color.gbLight : Color.gbDarkest, lineWidth: 1))
+        .background(Color.gbDarkest.opacity(event.isPositive ? 0.0 : 0.4))
+        .background(Color.gbDark.opacity(event.isPositive ? 0.5 : 0.15))
+        .overlay(Rectangle().stroke(event.isPositive ? Color.gbDark : Color.gbDarkest, lineWidth: 1))
     }
 }

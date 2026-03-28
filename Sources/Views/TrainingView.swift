@@ -45,20 +45,7 @@ struct TrainingView: View {
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
 
-                Button {
-                    gameState.screen = .overworld
-                } label: {
-                    Text("◀ BACK TO CITY")
-                        .font(.custom(GB.font, size: 14))
-                        .foregroundColor(.gbLightest)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color.gbDark)
-                        .overlay(Rectangle().stroke(Color.gbLight, lineWidth: 1))
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                GBBackButton(label: "◀  BACK TO CITY") { gameState.screen = .overworld }
             }
         }
     }
@@ -67,18 +54,26 @@ struct TrainingView: View {
     var headerBar: some View {
         ZStack {
             Color.gbDark
-            HStack {
+
+            HStack(spacing: 0) {
+                Rectangle().fill(Color.gbDarkest).frame(width: 5)
+                Spacer()
                 Text("HQ TRAINING CENTER")
                     .font(.custom(GB.font, size: 14))
                     .foregroundColor(.gbLightest)
                 Spacer()
-                Text("$\(gameState.funds)")
-                    .font(.custom(GB.font, size: 13))
-                    .foregroundColor(.gbLightest)
+                VStack(alignment: .trailing, spacing: 1) {
+                    Text("BUDGET")
+                        .font(.custom(GB.fontMono, size: 8))
+                        .foregroundColor(.gbDark)
+                    Text("$\(gameState.funds)")
+                        .font(.custom(GB.font, size: 13))
+                        .foregroundColor(.gbLightest)
+                }
+                .padding(.trailing, 14)
             }
-            .padding(.horizontal, 14)
         }
-        .frame(height: 48)
+        .frame(height: 52)
     }
 
     // MARK: - Empty

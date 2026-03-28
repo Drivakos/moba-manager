@@ -33,6 +33,88 @@ enum GB {
 // MARK: - Shared SwiftUI Components
 import SwiftUI
 
+// MARK: - Scanline Overlay (LCD effect)
+struct GBScanlineView: View {
+    var opacity: Double = 0.10
+    var body: some View {
+        Canvas { context, size in
+            var y: CGFloat = 0
+            while y < size.height {
+                context.fill(
+                    Path(CGRect(x: 0, y: y, width: size.width, height: 1)),
+                    with: .color(.black.opacity(opacity))
+                )
+                y += 3
+            }
+        }
+        .allowsHitTesting(false)
+    }
+}
+
+// MARK: - Corner-mark border
+struct GBCornerBorder: View {
+    var color: Color = .gbLight
+    var lineWidth: CGFloat = 1.5
+    var cornerSize: CGFloat = 10
+
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width
+            let h = geo.size.height
+            ZStack {
+                Rectangle().stroke(color.opacity(0.4), lineWidth: lineWidth)
+                Path { p in
+                    p.move(to: CGPoint(x: 0, y: cornerSize)); p.addLine(to: .zero); p.addLine(to: CGPoint(x: cornerSize, y: 0))
+                    p.move(to: CGPoint(x: w - cornerSize, y: 0)); p.addLine(to: CGPoint(x: w, y: 0)); p.addLine(to: CGPoint(x: w, y: cornerSize))
+                    p.move(to: CGPoint(x: w, y: h - cornerSize)); p.addLine(to: CGPoint(x: w, y: h)); p.addLine(to: CGPoint(x: w - cornerSize, y: h))
+                    p.move(to: CGPoint(x: cornerSize, y: h)); p.addLine(to: CGPoint(x: 0, y: h)); p.addLine(to: CGPoint(x: 0, y: h - cornerSize))
+                }
+                .stroke(color, lineWidth: lineWidth + 1)
+            }
+        }
+    }
+}
+
+// MARK: - Blink modifier
+struct GBBlink: ViewModifier {
+    @State private var visible = true
+    let interval: Double
+    func body(content: Content) -> some View {
+        content.opacity(visible ? 1 : 0)
+            .onAppear {
+                Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+                    withAnimation(.none) { visible.toggle() }
+                }
+            }
+    }
+}
+extension View {
+    func gbBlink(interval: Double = 0.55) -> some View { modifier(GBBlink(interval: interval)) }
+}
+
+// MARK: - Segmented stat bar (16-block GB style)
+struct GBSegmentBar: View {
+    let value: Int
+    var segments: Int = 16
+    private var filled: Int { Int(Double(value) / 99.0 * Double(segments)) }
+    private var barColor: Color {
+        let pct = Double(value) / 99.0
+        if pct > 0.75 { return .gbLightest }
+        if pct > 0.4  { return .gbLight }
+        return .gbDark
+    }
+    var body: some View {
+        HStack(spacing: 1) {
+            ForEach(0..<segments, id: \.self) { i in
+                Rectangle()
+                    .fill(i < filled ? barColor : Color.gbDarkest)
+                    .overlay(Rectangle().stroke(Color.gbDark.opacity(0.35), lineWidth: 0.5))
+            }
+        }
+        .frame(height: 8)
+    }
+}
+
 struct GBDialogueBar: View {
     let text: String
 
@@ -58,14 +140,7 @@ struct StatRowView: View {
                 .font(.custom(GB.font, size: 10))
                 .foregroundColor(.gbLight)
                 .frame(width: 56, alignment: .leading)
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    Rectangle().fill(Color.gbDarkest).frame(height: 8)
-                    Rectangle().fill(Color.gbLightest)
-                        .frame(width: geo.size.width * CGFloat(value) / 99, height: 8)
-                }
-            }
-            .frame(height: 8)
+            GBSegmentBar(value: value)
             Text("\(value)")
                 .font(.custom(GB.fontMono, size: 10))
                 .foregroundColor(.gbLightest)
@@ -78,38 +153,166 @@ struct PixelPortrait: View {
     let index: Int
     let role: Role
 
-    private let palette: [Color] = [.gbDark, .gbLight, .gbLightest, .gbDarkest, .gbDark]
+    private let shirtColors: [Color] = [.gbDark, .gbLight, .gbLightest, .gbDark, .gbDarkest]
+    private var shirtColor: Color { shirtColors[index % shirtColors.count] }
+
+    // Role-specific hat heights (creates visual variety)
+    private var hatHeight: CGFloat {
+        switch role {
+        case .mid:      return 16
+        case .carry:    return 10
+        case .offlaner: return 6
+        default:        return 12
+        }
+    }
 
     var body: some View {
         ZStack {
-            palette[index % palette.count]
+            // Background tile
+            Rectangle().fill(shirtColor.opacity(0.35))
+
             VStack(spacing: 0) {
-                Spacer()
+                // Hat / hair block
+                ZStack {
+                    Rectangle().fill(Color.gbDarkest).frame(width: 48, height: hatHeight)
+                    // Hat brim stripe
+                    Rectangle().fill(Color.gbDark).frame(width: 52, height: 3)
+                        .offset(y: hatHeight / 2 - 1.5)
+                }
+                .frame(width: 64, height: hatHeight + 3)
+
+                // Face
                 ZStack {
                     Rectangle()
                         .fill(Color.gbLightest)
-                        .frame(width: 52, height: 60)
-                        .overlay(Rectangle().stroke(Color.gbDarkest, lineWidth: 2))
-                    VStack(spacing: 8) {
-                        HStack(spacing: 12) {
-                            Rectangle().fill(Color.gbDarkest).frame(width: 8, height: 8)
-                            Rectangle().fill(Color.gbDarkest).frame(width: 8, height: 8)
+                        .frame(width: 48, height: 50)
+                        .overlay(Rectangle().stroke(Color.gbDarkest, lineWidth: 1.5))
+                    VStack(spacing: 7) {
+                        HStack(spacing: 10) {
+                            // Eyes vary by index
+                            Rectangle().fill(Color.gbDarkest).frame(width: 7, height: index % 2 == 0 ? 7 : 5)
+                            Rectangle().fill(Color.gbDarkest).frame(width: 7, height: index % 2 == 0 ? 7 : 5)
                         }
-                        Rectangle().fill(Color.gbDark).frame(width: 20, height: 4)
+                        // Mouth
+                        Rectangle().fill(Color.gbDarkest).frame(width: 16, height: 3)
                     }
-                    Text(role.abbreviation)
-                        .font(.custom(GB.fontMono, size: 7))
-                        .foregroundColor(.gbDark)
-                        .offset(y: 22)
+                    .offset(y: 5)
                 }
-                Rectangle()
-                    .fill(palette[index % palette.count])
-                    .frame(width: 64, height: 26)
-                    .overlay(Rectangle().stroke(Color.gbDarkest, lineWidth: 1.5))
+
+                // Jersey / body
+                ZStack {
+                    Rectangle()
+                        .fill(shirtColor)
+                        .frame(width: 64, height: 28)
+                        .overlay(Rectangle().stroke(Color.gbDarkest, lineWidth: 1.5))
+                    // Jersey number or role stripe
+                    HStack(spacing: 2) {
+                        Rectangle().fill(Color.gbDarkest.opacity(0.5)).frame(width: 1, height: 16)
+                        Text(role.abbreviation)
+                            .font(.custom(GB.font, size: 9))
+                            .foregroundColor(shirtColor == .gbDarkest ? .gbLightest : .gbDarkest)
+                        Rectangle().fill(Color.gbDarkest.opacity(0.5)).frame(width: 1, height: 16)
+                    }
+                }
             }
         }
         .overlay(Rectangle().stroke(Color.gbDarkest, lineWidth: 2))
         .clipped()
+    }
+}
+
+// MARK: - Shared Layout Components
+
+/// Standardised screen header — title + optional subtitle, left/right accent strips
+struct GBScreenHeader: View {
+    let title: String
+    var subtitle: String? = nil
+
+    var body: some View {
+        ZStack {
+            Color.gbDark
+
+            HStack(spacing: 0) {
+                Rectangle().fill(Color.gbDarkest).frame(width: 5)
+                Spacer()
+                VStack(spacing: 3) {
+                    Text(title.uppercased())
+                        .font(.custom(GB.font, size: 14))
+                        .foregroundColor(.gbLightest)
+                    if let sub = subtitle {
+                        Text(sub.uppercased())
+                            .font(.custom(GB.fontMono, size: 10))
+                            .foregroundColor(.gbLight)
+                    }
+                }
+                Spacer()
+                Rectangle().fill(Color.gbDarkest).frame(width: 5)
+            }
+        }
+        .frame(height: subtitle != nil ? 58 : 48)
+        .overlay(Rectangle().stroke(Color.gbDark.opacity(0.6), lineWidth: 1), alignment: .bottom)
+    }
+}
+
+/// Section label row — a coloured bar with title
+struct GBSectionLabel: View {
+    let text: String
+    var body: some View {
+        HStack(spacing: 8) {
+            Rectangle().fill(Color.gbLight).frame(width: 3, height: 14)
+            Text(text.uppercased())
+                .font(.custom(GB.font, size: 10))
+                .foregroundColor(.gbLight)
+            Spacer()
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
+        .background(Color.gbDark)
+    }
+}
+
+/// Standardised back button
+struct GBBackButton: View {
+    let action: () -> Void
+    var label: String = "◀  BACK"
+    var body: some View {
+        Button(action: action) {
+            Text(label)
+                .font(.custom(GB.font, size: 14))
+                .foregroundColor(.gbLightest)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 13)
+                .background(Color.gbDark)
+                .overlay(Rectangle().stroke(Color.gbLight, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, 12)
+        .padding(.bottom, 16)
+    }
+}
+
+/// Primary action button (call to action)
+struct GBPrimaryButton: View {
+    let label: String
+    var enabled: Bool = true
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            Text(label)
+                .font(.custom(GB.font, size: 15))
+                .foregroundColor(enabled ? .gbLightest : .gbDark)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(enabled ? Color.gbDark : Color.gbDarkest)
+                .overlay(
+                    ZStack {
+                        Rectangle().stroke(enabled ? Color.gbLight : Color.gbDarkest, lineWidth: enabled ? 2 : 1)
+                        if enabled { GBCornerBorder(color: .gbDark, lineWidth: 1, cornerSize: 8) }
+                    }
+                )
+        }
+        .buttonStyle(.plain)
+        .disabled(!enabled)
     }
 }
 

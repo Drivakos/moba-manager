@@ -47,21 +47,7 @@ struct TeamRosterView: View {
                     teamStatsFooter
                 }
 
-                // Close button
-                Button {
-                    gameState.screen = .overworld
-                } label: {
-                    Text("◀ BACK")
-                        .font(.custom(GB.font, size: 14))
-                        .foregroundColor(.gbLightest)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color.gbDark)
-                        .overlay(Rectangle().stroke(Color.gbLight, lineWidth: 1))
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                GBBackButton { gameState.screen = .overworld }
             }
         }
         .sheet(item: $selectedPlayer) { player in
@@ -120,16 +106,45 @@ struct TeamRosterView: View {
     var headerBar: some View {
         ZStack {
             Color.gbDark
-            VStack(spacing: 2) {
-                Text(gameState.playerTeam.name.uppercased())
-                    .font(.custom(GB.font, size: 15))
-                    .foregroundColor(.gbLightest)
-                Text("W:\(gameState.playerTeam.wins)  L:\(gameState.playerTeam.losses)  AVG:\(gameState.playerTeam.averageOverall)")
-                    .font(.custom(GB.fontMono, size: 11))
-                    .foregroundColor(.gbLight)
+            // Subtle pixel-grid texture rows
+            VStack(spacing: 8) {
+                Rectangle().fill(Color.gbDarkest.opacity(0.3)).frame(height: 1)
+                Rectangle().fill(Color.gbDarkest.opacity(0.3)).frame(height: 1)
+            }
+
+            VStack(spacing: 4) {
+                HStack(spacing: 8) {
+                    // Team icon block
+                    Rectangle()
+                        .fill(Color.gbDarkest)
+                        .frame(width: 6, height: 20)
+                    Text(gameState.playerTeam.name.uppercased())
+                        .font(.custom(GB.font, size: 15))
+                        .foregroundColor(.gbLightest)
+                    Rectangle()
+                        .fill(Color.gbDarkest)
+                        .frame(width: 6, height: 20)
+                }
+
+                HStack(spacing: 14) {
+                    statPill("W", "\(gameState.playerTeam.wins)", .gbLightest)
+                    statPill("L", "\(gameState.playerTeam.losses)", .gbLight)
+                    statPill("OVR", "\(gameState.playerTeam.averageOverall)", .gbLight)
+                }
             }
         }
-        .frame(height: 54)
+        .frame(height: 60)
+    }
+
+    func statPill(_ label: String, _ value: String, _ color: Color) -> some View {
+        HStack(spacing: 3) {
+            Text(label)
+                .font(.custom(GB.fontMono, size: 9))
+                .foregroundColor(.gbDark)
+            Text(value)
+                .font(.custom(GB.font, size: 12))
+                .foregroundColor(color)
+        }
     }
 
     // MARK: - Empty State
@@ -231,37 +246,59 @@ struct CoachRowView: View {
 struct PlayerRowView: View {
     let player: Player
 
-    var body: some View {
-        HStack(spacing: 10) {
-            // Role badge
-            Text(player.role.abbreviation)
-                .font(.custom(GB.font, size: 10))
-                .foregroundColor(.gbDarkest)
-                .frame(width: 36, height: 22)
-                .background(Color.gbLight)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(player.name.uppercased())
-                    .font(.custom(GB.font, size: 12))
-                    .foregroundColor(.gbLightest)
-                Text("「\(player.tag)」· \(player.personality.rawValue)")
-                    .font(.custom(GB.fontMono, size: 10))
-                    .foregroundColor(.gbLight)
-            }
-
-            Spacer()
-
-            VStack(alignment: .trailing, spacing: 2) {
-                Text("OVR \(player.stats.overall)")
-                    .font(.custom(GB.font, size: 12))
-                    .foregroundColor(.gbLightest)
-                Text("Age \(player.age)")
-                    .font(.custom(GB.fontMono, size: 10))
-                    .foregroundColor(.gbDark)
-            }
+    private var roleAccent: Color {
+        switch player.role {
+        case .carry:    return .gbLightest
+        case .support:  return .gbLight
+        case .jungler:  return .gbDark
+        case .mid:      return .gbLightest
+        case .offlaner: return .gbLight
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
+    }
+
+    var body: some View {
+        HStack(spacing: 0) {
+            // Role color accent strip
+            Rectangle()
+                .fill(roleAccent)
+                .frame(width: 4)
+
+            HStack(spacing: 10) {
+                // Role badge
+                Text(player.role.abbreviation)
+                    .font(.custom(GB.font, size: 10))
+                    .foregroundColor(.gbDarkest)
+                    .frame(width: 36, height: 22)
+                    .background(roleAccent)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(player.name.uppercased())
+                        .font(.custom(GB.font, size: 12))
+                        .foregroundColor(.gbLightest)
+                    HStack(spacing: 6) {
+                        Text("「\(player.tag)」")
+                            .font(.custom(GB.fontMono, size: 9))
+                            .foregroundColor(.gbLight)
+                        Text(player.personality.rawValue.uppercased())
+                            .font(.custom(GB.fontMono, size: 8))
+                            .foregroundColor(.gbDark)
+                    }
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 3) {
+                    Text("OVR \(player.stats.overall)")
+                        .font(.custom(GB.font, size: 13))
+                        .foregroundColor(.gbLightest)
+                    Text(player.starDisplay)
+                        .font(.system(size: 8))
+                        .foregroundColor(.gbLight)
+                }
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 9)
+        }
         .background(Color.gbDark)
         .overlay(Rectangle().stroke(Color.gbDarkest, lineWidth: 1))
     }
@@ -270,15 +307,32 @@ struct PlayerRowView: View {
 // MARK: - Empty Slot
 struct EmptySlotView: View {
     var body: some View {
-        HStack {
-            Text("-- EMPTY SLOT --")
-                .font(.custom(GB.fontMono, size: 12))
-                .foregroundColor(.gbDark)
+        HStack(spacing: 10) {
+            // Dashed accent strip
+            Rectangle()
+                .fill(Color.gbDarkest)
+                .frame(width: 4)
+            HStack {
+                Text("·  ·  ·")
+                    .font(.custom(GB.fontMono, size: 10))
+                    .foregroundColor(.gbDarkest)
+                Text("EMPTY SLOT")
+                    .font(.custom(GB.fontMono, size: 11))
+                    .foregroundColor(.gbDark)
+                Spacer()
+                Text("[ RECRUIT ]")
+                    .font(.custom(GB.fontMono, size: 9))
+                    .foregroundColor(.gbDarkest)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 11)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
-        .background(Color.black.opacity(0.3))
-        .overlay(Rectangle().stroke(Color.gbDarkest.opacity(0.5), lineWidth: 1))
+        .background(Color.gbDarkest.opacity(0.5))
+        .overlay(
+            Rectangle().stroke(Color.gbDarkest.opacity(0.6), lineWidth: 1)
+                .overlay(Rectangle().stroke(Color.gbDark.opacity(0.15), lineWidth: 0.5).padding(2))
+        )
     }
 }
 
@@ -356,17 +410,7 @@ struct PlayerDetailView: View {
                     .padding(12)
                 }
 
-                Button {
-                    dismiss()
-                } label: {
-                    Text("◀ BACK")
-                        .font(.custom(GB.font, size: 14))
-                        .foregroundColor(.gbLightest)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color.gbDark)
-                }
-                .buttonStyle(.plain)
+                GBBackButton { dismiss() }
             }
         }
     }

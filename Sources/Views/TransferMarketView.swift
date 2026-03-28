@@ -83,18 +83,10 @@ struct TransferMarketView: View {
 
     // MARK: - Header
     var headerBar: some View {
-        ZStack {
-            Color.gbDark
-            VStack(spacing: 2) {
-                Text("TRANSFER MARKET")
-                    .font(.custom(GB.font, size: 14))
-                    .foregroundColor(.gbLightest)
-                Text("\(gameState.playerDatabase.freeAgents.count) FREE AGENTS AVAILABLE")
-                    .font(.custom(GB.fontMono, size: 10))
-                    .foregroundColor(.gbLight)
-            }
-        }
-        .frame(height: 52)
+        GBScreenHeader(
+            title: "Transfer Market",
+            subtitle: "\(gameState.playerDatabase.freeAgents.count) Free Agents Available"
+        )
     }
 
     // MARK: - Budget bar
@@ -182,119 +174,133 @@ struct TransferMarketView: View {
         let isFree = record.status.isFree
         let canSign = isFree && gameState.canSign
 
-        return HStack(spacing: 10) {
-            // OVR + Role column
-            VStack(spacing: 2) {
-                Text(player.role.abbreviation)
-                    .font(.custom(GB.font, size: 9))
-                    .foregroundColor(.gbDarkest)
-                    .frame(width: 38)
-                    .padding(.vertical, 2)
-                    .background(isFree ? Color.gbLight : Color.gbDark)
-                Text("\(player.stats.overall)")
-                    .font(.custom(GB.font, size: 14))
-                    .foregroundColor(isFree ? .gbLightest : .gbDark)
-                Text("OVR")
-                    .font(.custom(GB.fontMono, size: 8))
-                    .foregroundColor(.gbDark)
-                // Potential stars
-                Text(player.starDisplay)
-                    .font(.system(size: 8))
-                    .foregroundColor(isFree ? .gbLight : .gbDark)
-            }
-            .frame(width: 42)
+        return HStack(spacing: 0) {
+            // Role color accent strip
+            Rectangle()
+                .fill(isFree ? Color.gbLight : Color.gbDarkest)
+                .frame(width: 4)
 
-            // Name / info column
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 4) {
-                    Text(player.name.uppercased())
-                        .font(.custom(GB.font, size: 11))
-                        .foregroundColor(isFree ? .gbLightest : .gbDark)
-                    Text("「\(player.tag)」")
-                        .font(.custom(GB.fontMono, size: 9))
-                        .foregroundColor(.gbDark)
-                }
-                Text("Age \(player.age)  \(player.personality.rawValue)")
-                    .font(.custom(GB.fontMono, size: 9))
-                    .foregroundColor(.gbDark)
-                // Mini stat bar row
-                HStack(spacing: 6) {
-                    miniStat("MCH", player.stats.mechanics)
-                    miniStat("SNS", player.stats.gameSense)
-                    miniStat("TM",  player.stats.teamwork)
-                    miniStat("MNT", player.stats.mental)
-                }
-                // Status badge
-                if !isFree {
-                    Text(record.status.label)
-                        .font(.custom(GB.fontMono, size: 8))
+            HStack(spacing: 10) {
+                // OVR block
+                VStack(spacing: 1) {
+                    Text(player.role.abbreviation)
+                        .font(.custom(GB.font, size: 9))
                         .foregroundColor(.gbDarkest)
-                        .padding(.horizontal, 5)
+                        .frame(width: 38)
                         .padding(.vertical, 2)
-                        .background(Color.gbDark)
+                        .background(isFree ? Color.gbLight : Color.gbDark)
+                    Text("\(player.stats.overall)")
+                        .font(.custom(GB.font, size: 18))
+                        .foregroundColor(isFree ? .gbLightest : .gbDark)
+                    Text("OVR")
+                        .font(.custom(GB.fontMono, size: 7))
+                        .foregroundColor(.gbDark)
+                    Text(player.starDisplay)
+                        .font(.system(size: 7))
+                        .foregroundColor(isFree ? .gbLight : .gbDarkest)
                 }
-            }
+                .frame(width: 42)
 
-            Spacer(minLength: 4)
-
-            // Salary + action column
-            VStack(spacing: 4) {
-                Text("$\(player.salary)")
-                    .font(.custom(GB.font, size: 11))
-                    .foregroundColor(isFree ? .gbLightest : .gbDark)
-                Text("/match")
-                    .font(.custom(GB.fontMono, size: 8))
-                    .foregroundColor(.gbDark)
-
-                if isFree {
-                    Button {
-                        if canSign { confirmPlayer = player }
-                    } label: {
-                        Text(gameState.canSign ? "SIGN" : "FULL")
-                            .font(.custom(GB.font, size: 10))
-                            .foregroundColor(canSign ? .gbDarkest : .gbDark)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(canSign ? Color.gbLightest : Color.gbDark)
-                            .overlay(Rectangle().stroke(canSign ? Color.gbDark : Color.gbDarkest, lineWidth: 1))
+                // Info column
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 4) {
+                        Text(player.name.uppercased())
+                            .font(.custom(GB.font, size: 11))
+                            .foregroundColor(isFree ? .gbLightest : .gbDark)
+                        Text("「\(player.tag)」")
+                            .font(.custom(GB.fontMono, size: 9))
+                            .foregroundColor(.gbDark)
                     }
-                    .buttonStyle(.plain)
-                    .disabled(!canSign)
+                    HStack(spacing: 8) {
+                        Text("AGE \(player.age)")
+                            .font(.custom(GB.fontMono, size: 8))
+                            .foregroundColor(.gbDark)
+                        Text(player.personality.rawValue.uppercased())
+                            .font(.custom(GB.fontMono, size: 8))
+                            .foregroundColor(.gbDark)
+                    }
+                    // Segmented mini stats
+                    VStack(alignment: .leading, spacing: 2) {
+                        miniStatRow("MCH", player.stats.mechanics, isFree: isFree)
+                        miniStatRow("SNS", player.stats.gameSense, isFree: isFree)
+                        miniStatRow("TM",  player.stats.teamwork,  isFree: isFree)
+                        miniStatRow("MNT", player.stats.mental,    isFree: isFree)
+                    }
+                    if !isFree {
+                        Text(record.status.label)
+                            .font(.custom(GB.fontMono, size: 8))
+                            .foregroundColor(.gbDarkest)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(Color.gbDark)
+                    }
+                }
+
+                Spacer(minLength: 4)
+
+                // Wage + action
+                VStack(spacing: 5) {
+                    VStack(spacing: 1) {
+                        Text("$\(player.salary)")
+                            .font(.custom(GB.font, size: 12))
+                            .foregroundColor(isFree ? .gbLightest : .gbDark)
+                        Text("/match")
+                            .font(.custom(GB.fontMono, size: 7))
+                            .foregroundColor(.gbDark)
+                    }
+                    if isFree {
+                        Button {
+                            if canSign { confirmPlayer = player }
+                        } label: {
+                            Text(gameState.canSign ? "SIGN" : "FULL")
+                                .font(.custom(GB.font, size: 10))
+                                .foregroundColor(canSign ? .gbDarkest : .gbDark)
+                                .frame(width: 44)
+                                .padding(.vertical, 5)
+                                .background(canSign ? Color.gbLightest : Color.gbDarkest)
+                                .overlay(
+                                    ZStack {
+                                        Rectangle().stroke(canSign ? Color.gbLight : Color.gbDarkest, lineWidth: 1)
+                                        if canSign {
+                                            GBCornerBorder(color: .gbDark, lineWidth: 1, cornerSize: 5)
+                                        }
+                                    }
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(!canSign)
+                    }
                 }
             }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 10)
         }
-        .padding(10)
-        .background(isFree ? Color.gbDarkest : Color(red: 0.04, green: 0.10, blue: 0.04))
+        .background(isFree ? Color.gbDarkest : Color(red: 0.04, green: 0.08, blue: 0.04))
         .overlay(Rectangle().stroke(isFree ? Color.gbDark : Color.gbDarkest, lineWidth: 1))
     }
 
-    func miniStat(_ label: String, _ value: Int) -> some View {
-        HStack(spacing: 2) {
+    func miniStatRow(_ label: String, _ value: Int, isFree: Bool) -> some View {
+        HStack(spacing: 4) {
             Text(label)
                 .font(.custom(GB.fontMono, size: 7))
                 .foregroundColor(.gbDark)
-            Text("\(value)")
-                .font(.custom(GB.fontMono, size: 8))
-                .foregroundColor(.gbLight)
+                .frame(width: 22, alignment: .leading)
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Rectangle().fill(Color.gbDarkest).frame(height: 4)
+                    Rectangle()
+                        .fill(isFree ? Color.gbLight : Color.gbDark)
+                        .frame(width: geo.size.width * CGFloat(value) / 99, height: 4)
+                }
+            }
+            .frame(height: 4)
         }
     }
 
+
     // MARK: - Back
     var backButton: some View {
-        Button {
-            gameState.screen = .overworld
-        } label: {
-            Text("◀ BACK")
-                .font(.custom(GB.font, size: 14))
-                .foregroundColor(.gbLightest)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(Color.gbDark)
-                .overlay(Rectangle().stroke(Color.gbLight, lineWidth: 1))
-        }
-        .buttonStyle(.plain)
-        .padding(.horizontal, 12)
-        .padding(.bottom, 12)
+        GBBackButton { gameState.screen = .overworld }
     }
 }
 

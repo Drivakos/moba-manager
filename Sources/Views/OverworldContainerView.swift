@@ -61,12 +61,15 @@ struct OverworldContainerView: View {
                 .font(.custom(GB.font, size: 11))
                 .foregroundColor(.gbLightest)
                 .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-                .background(Color.gbDarkest)
+                .padding(.vertical, 6)
+                .background(Color.gbDarkest.opacity(0.92))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 0)
-                        .stroke(Color.gbLight, lineWidth: 1)
+                    ZStack {
+                        Rectangle().stroke(Color.gbLight, lineWidth: 1)
+                        GBCornerBorder(color: .gbDark, lineWidth: 1, cornerSize: 5)
+                    }
                 )
         }
+        .buttonStyle(.plain)
     }
 }
