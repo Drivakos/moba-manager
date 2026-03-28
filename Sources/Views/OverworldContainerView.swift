@@ -114,17 +114,6 @@ struct OverworldContainerView: View {
         .onChange(of: gameState.screen) { _, _ in
             scene?.refreshHUD()
         }
-        .focusable()
-        .onKeyPress(phases: .down) { press in
-            switch press.key {
-            case .init("w"), .upArrow:    scene?.movePlayer(direction: .up);    return .handled
-            case .init("s"), .downArrow:  scene?.movePlayer(direction: .down);  return .handled
-            case .init("a"), .leftArrow:  scene?.movePlayer(direction: .left);  return .handled
-            case .init("d"), .rightArrow: scene?.movePlayer(direction: .right); return .handled
-            case .init(" "), .return:     scene?.handleAButton();               return .handled
-            default: return .ignored
-            }
-        }
         .onChange(of: gameState.isEncountering) { _, encountering in
             if !encountering {
                 // Encounter view dismissed — unblock the overworld
