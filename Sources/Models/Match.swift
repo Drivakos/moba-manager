@@ -73,6 +73,7 @@ struct MatchResult: Codable {
     let playerScore: Int    // phases won by player
     let opponentScore: Int
     let mvpName: String?
+    let phaseResults: [Bool]  // [early, mid, late] — true = player won that phase
 }
 
 // MARK: - Match Engine
@@ -83,6 +84,7 @@ struct MatchEngine {
         var playerPhaseWins = 0
         var opponentPhaseWins = 0
         var mvpContributions: [String: Int] = [:]
+        var phaseResults: [Bool] = []
 
         for phase in MatchPhase.allCases {
             let playerPower  = phasePower(team: player, phase: phase)
@@ -96,6 +98,7 @@ struct MatchEngine {
             let opponentFinal = max(0, opponentPower + opponent.synergyBonus - scoutShave)
 
             let playerWins = playerFinal > opponentFinal
+            phaseResults.append(playerWins)
             if playerWins {
                 playerPhaseWins += 1
             } else {
@@ -125,7 +128,8 @@ struct MatchEngine {
             events: events,
             playerScore: playerPhaseWins,
             opponentScore: opponentPhaseWins,
-            mvpName: mvp
+            mvpName: mvp,
+            phaseResults: phaseResults
         )
     }
 

@@ -1,4 +1,5 @@
 import SwiftUI
+import SpriteKit
 
 struct MatchSimView: View {
     @Environment(GameState.self) var gameState
@@ -7,14 +8,15 @@ struct MatchSimView: View {
     @State private var visibleEvents: [MatchEvent] = []
     @State private var done = false
     @State private var screenFlash = false
+    @State private var mapScene: MatchMapScene? = nil
+    @State private var currentPhaseLabel: String = ""
 
-    // Battle intro states
+    // Battle intro
     @State private var showIntro = true
-    @State private var introPhase = 0       // 0=blank 1=player slides in 2=opp slides in 3=flash 4=tactic 5=fadeout
     @State private var playerOffset: CGFloat = -300
-    @State private var oppOffset: CGFloat = 300
+    @State private var oppOffset: CGFloat    =  300
     @State private var tacticOpacity: Double = 0
-    @State private var introOpacity: Double = 1
+    @State private var introOpacity: Double  = 1
 
     private var opponent: Team { gameState.activeOpponent ?? .empty }
     private var tactic: MatchTactic { gameState.selectedTactic }
@@ -32,6 +34,28 @@ struct MatchSimView: View {
             } else {
                 VStack(spacing: 0) {
                     matchHeader
+
+                    // Map
+                    ZStack(alignment: .bottom) {
+                        if let scene = mapScene {
+                            SpriteView(scene: scene, options: [.allowsTransparency])
+                                .frame(height: 260)
+                                .background(Color.gbDarkest)
+                        }
+                        if !currentPhaseLabel.isEmpty {
+                            Text(currentPhaseLabel)
+                                .font(.custom(GB.font, size: 11))
+                                .foregroundColor(.gbLightest)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 4)
+                                .background(Color.gbDarkest.opacity(0.85))
+                                .overlay(Rectangle().stroke(Color.gbLight, lineWidth: 1))
+                                .padding(.bottom, 6)
+                        }
+                    }
+
+                    Divider().background(Color.gbDark)
+
                     if let r = result, done {
                         resultScreen(r)
                     } else {
@@ -43,15 +67,12 @@ struct MatchSimView: View {
         .onAppear(perform: startIntro)
     }
 
-    // MARK: - Battle Intro Overlay
+    // MARK: - Intro Overlay
     var introOverlay: some View {
         ZStack {
             Color.gbDarkest
-
             VStack(spacing: 20) {
                 Spacer()
-
-                // Player team name (slides from left)
                 Text(gameState.playerTeam.name.uppercased())
                     .font(.custom(GB.font, size: 22))
                     .foregroundColor(.gbLightest)
@@ -59,14 +80,10 @@ struct MatchSimView: View {
                     .padding(.leading, 28)
                     .offset(x: playerOffset)
 
-                // VS
                 Text("VS")
                     .font(.custom(GB.font, size: 32))
                     .foregroundColor(.gbLight)
-                    .scaleEffect(introPhase >= 2 ? 1.0 : 0.4)
-                    .animation(.spring(response: 0.3, dampingFraction: 0.6), value: introPhase)
 
-                // Opponent name (slides from right)
                 Text(opponent.name.uppercased())
                     .font(.custom(GB.font, size: 22))
                     .foregroundColor(.gbLight)
@@ -76,7 +93,6 @@ struct MatchSimView: View {
 
                 Spacer()
 
-                // Tactic banner
                 VStack(spacing: 4) {
                     Text("TACTIC: \(tactic.rawValue)")
                         .font(.custom(GB.font, size: 16))
@@ -166,7 +182,7 @@ struct MatchSimView: View {
                         .foregroundColor(.gbDark)
                 }
             }
-            .frame(height: 110)
+            .frame(height: 100)
 
             Divider().background(Color.gbLight)
 
@@ -201,32 +217,21 @@ struct MatchSimView: View {
 
     // MARK: - Intro Animation
     private func startIntro() {
-        // Phase 1 — player name slides in
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-            withAnimation(.easeOut(duration: 0.35)) {
-                introPhase = 1
-                playerOffset = 0
-            }
+            withAnimation(.easeOut(duration: 0.35)) { playerOffset = 0 }
         }
-        // Phase 2 — opponent slides in
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.65) {
-            withAnimation(.easeOut(duration: 0.35)) {
-                introPhase = 2
-                oppOffset = 0
-            }
+            withAnimation(.easeOut(duration: 0.35)) { oppOffset = 0 }
         }
-        // Phase 3 — screen flash
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.15) {
             withAnimation(.easeIn(duration: 0.08)) { screenFlash = true }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                 withAnimation { screenFlash = false }
             }
         }
-        // Phase 4 — tactic banner
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.35) {
             withAnimation(.easeIn(duration: 0.25)) { tacticOpacity = 1 }
         }
-        // Phase 5 — fade out intro, start match
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.1) {
             withAnimation(.easeIn(duration: 0.3)) { introOpacity = 0 }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -238,30 +243,64 @@ struct MatchSimView: View {
 
     // MARK: - Match Simulation
     private func startMatch() {
-        let r = MatchEngine.simulate(
-            player: gameState.playerTeam,
-            opponent: opponent,
-            tactic: tactic
-        )
+        // Build and configure the map scene
+        let scene = MatchMapScene(size: CGSize(width: 320, height: 260))
+        scene.configure(playerTeam: gameState.playerTeam, opponent: opponent)
+        mapScene = scene
+
+        // Simulate
+        let r = MatchEngine.simulate(player: gameState.playerTeam, opponent: opponent, tactic: tactic)
         result = r
 
-        var delay = 0.2
-        for event in r.events {
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                withAnimation { visibleEvents.append(event) }
-                if event.isPositive {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                        withAnimation(.easeIn(duration: 0.07)) { screenFlash = true }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.13) {
-                            withAnimation { screenFlash = false }
-                        }
-                    }
+        let phases: [MatchPhase] = MatchPhase.allCases
+        let eventGroups = Dictionary(grouping: r.events, by: \.phase)
+        let phaseWins = r.phaseResults  // [early, mid, late]
+
+        var phaseStart = 0.4  // start first phase slightly after map appears
+
+        for (idx, phase) in phases.enumerated() {
+            let phaseName = phase.rawValue
+            let events    = eventGroups[phase] ?? []
+            let playerWon = idx < phaseWins.count ? phaseWins[idx] : false
+            let t         = phaseStart
+
+            // Show phase label
+            DispatchQueue.main.asyncAfter(deadline: .now() + t - 0.1) {
+                withAnimation { currentPhaseLabel = "▶ \(phaseName)" }
+            }
+
+            // Fire map animation
+            DispatchQueue.main.asyncAfter(deadline: .now() + t) {
+                scene.animatePhase(phase, playerWon: playerWon, events: events) {}
+            }
+
+            // Reveal events in log
+            for (ei, event) in events.enumerated() {
+                let evtDelay = t + Double(ei) * 0.72
+                DispatchQueue.main.asyncAfter(deadline: .now() + evtDelay) {
+                    withAnimation { visibleEvents.append(event) }
+                    if event.isPositive { flashScreen() }
                 }
             }
-            delay += 0.65
+
+            // Per-phase duration: 0.5s move + events * 0.72 + 0.6s resolve gap
+            phaseStart += 0.5 + Double(events.count) * 0.72 + 0.8
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay + 0.4) {
-            withAnimation { done = true }
+
+        // Victory animation + result reveal
+        DispatchQueue.main.asyncAfter(deadline: .now() + phaseStart) {
+            withAnimation { currentPhaseLabel = "" }
+            scene.animateVictory(playerWon: r.won)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                withAnimation { done = true }
+            }
+        }
+    }
+
+    private func flashScreen() {
+        withAnimation(.easeIn(duration: 0.07)) { screenFlash = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.13) {
+            withAnimation { screenFlash = false }
         }
     }
 }
