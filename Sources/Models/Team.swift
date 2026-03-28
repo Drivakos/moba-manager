@@ -37,15 +37,19 @@ struct Team: Codable, Identifiable {
 
     // MARK: - Generate opponent team
     static func generateOpponent(name: String, chapter: Int) -> Team {
-        let roles = Role.allCases.shuffled()
+        // Scale opponent size with chapter: ch1=3 players, ch2=4, ch3=5
+        let rosterSize = min(3 + (chapter - 1), 5)
+        let roles = Role.allCases.shuffled().prefix(rosterSize)
         let roster = roles.map { Player.generate(bias: $0, chapter: max(1, chapter)) }
+        // Opponents only get a coach from chapter 2 onward
+        let coach = chapter >= 2 ? Coach.generate(chapter: max(1, chapter)) : nil
         return Team(
             id: UUID(),
             name: name,
             roster: roster,
-            coach: Coach.generate(chapter: max(1, chapter)),
-            wins: Int.random(in: 2...8),
-            losses: Int.random(in: 1...5)
+            coach: coach,
+            wins: Int.random(in: 1...5),
+            losses: Int.random(in: 1...4)
         )
     }
 

@@ -89,13 +89,14 @@ struct MatchEngine {
         for phase in MatchPhase.allCases {
             let playerPower  = phasePower(team: player, phase: phase)
             let opponentPower = phasePower(team: opponent, phase: phase)
-            let roll = Int.random(in: -15...15)
-            let tacticBonus = tactic.bonus(for: phase)
+            let playerRoll   = Int.random(in: -12...12)
+            let opponentRoll = Int.random(in: -12...12)
+            let tacticBonus  = tactic.bonus(for: phase)
             // Coach: communication amplifies synergy, scouting shaves opponent
             let commBonus  = (player.coach?.stats.communication ?? 0) / 25
             let scoutShave = (player.coach?.stats.scouting ?? 0) / 20
-            let playerFinal   = playerPower + player.synergyBonus + commBonus + tacticBonus + roll
-            let opponentFinal = max(0, opponentPower + opponent.synergyBonus - scoutShave)
+            let playerFinal   = playerPower + player.synergyBonus + commBonus + tacticBonus + playerRoll
+            let opponentFinal = max(0, opponentPower + opponent.synergyBonus - scoutShave + opponentRoll)
 
             let playerWins = playerFinal > opponentFinal
             phaseResults.append(playerWins)
