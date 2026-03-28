@@ -60,6 +60,20 @@ final class MatchMapScene: SKScene {
     private var oppUnits:    [SKShapeNode] = []
     private var playerRoles: [Role] = []
     private var oppRoles:    [Role] = []
+
+    // 5 PC seats arranged in the blue base: 3 on top row, 2 on bottom row
+    private var pcPositions: [CGPoint] {
+        let b = blueBasePos
+        let dx: CGFloat = 13
+        let dy: CGFloat = 10
+        return [
+            CGPoint(x: b.x - dx, y: b.y + dy),
+            CGPoint(x: b.x,      y: b.y + dy),
+            CGPoint(x: b.x + dx, y: b.y + dy),
+            CGPoint(x: b.x - dx / 2, y: b.y - dy),
+            CGPoint(x: b.x + dx / 2, y: b.y - dy),
+        ]
+    }
     private var redNexusNode:  SKShapeNode!
     private var blueNexusNode: SKShapeNode!
     private var dragonNode:    SKShapeNode!
@@ -122,7 +136,7 @@ final class MatchMapScene: SKScene {
                 self.recallUnits(self.oppUnits, toBase: self.redBasePos)
                 self.pulseObjective(phase: phase, playerCapture: true)
             } else {
-                self.recallUnits(self.playerUnits, toBase: self.blueBasePos)
+                self.recallPlayerUnitsToPCs()
                 self.advanceUnits(self.oppUnits, roles: self.oppRoles, fromIdx: self.oppMirrorIdx(idx), forward: false)
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { completion() }
@@ -303,8 +317,11 @@ final class MatchMapScene: SKScene {
     private func buildUnits() {
         playerUnits = makeTeamUnits(roles: playerRoles, isPlayer: true)
         oppUnits    = makeTeamUnits(roles: oppRoles,    isPlayer: false)
-        playerUnits.forEach { $0.position = blueBasePos }
-        oppUnits.forEach    { $0.position = redBasePos  }
+        let seats = pcPositions
+        for (i, unit) in playerUnits.enumerated() {
+            unit.position = seats[min(i, seats.count - 1)]
+        }
+        oppUnits.forEach { $0.position = redBasePos }
     }
 
     private func makeTeamUnits(roles: [Role], isPlayer: Bool) -> [SKShapeNode] {
@@ -334,6 +351,26 @@ final class MatchMapScene: SKScene {
                 ? min(fromIdx + 1, pts.count - 1)
                 : max(fromIdx - 1, 0)
             unit.run(.move(to: pts[nextIdx], duration: 0.35))
+        }
+    }
+
+    private func recallPlayerUnitsToPCs() {
+        let seats = pcPositions
+        for (i, unit) in playerUnits.enumerated() {
+            let seat  = seats[min(i, seats.count - 1)]
+            let delay = Double(i) * 0.05
+            unit.run(.sequence([
+                .wait(forDuration: delay),
+                .group([
+                    .scale(to: 0.3, duration: 0.25),
+                    .rotate(byAngle: .pi, duration: 0.25),
+                ]),
+                .move(to: seat, duration: 0),
+                .group([
+                    .scale(to: 1.0, duration: 0.2),
+                    .rotate(byAngle: -.pi, duration: 0.2),
+                ]),
+            ]))
         }
     }
 

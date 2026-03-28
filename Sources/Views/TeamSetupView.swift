@@ -159,6 +159,7 @@ struct TeamSetupView: View {
         gameState.managerName = managerName.uppercased().trimmingCharacters(in: .whitespaces)
         gameState.playerTeam.name = teamName.uppercased().trimmingCharacters(in: .whitespaces)
         gameState.setFlag("intro_seen")
+        gameState.initLeague()
         gameState.screen = .overworld
     }
 }

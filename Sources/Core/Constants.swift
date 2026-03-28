@@ -30,6 +30,89 @@ enum GB {
     }
 }
 
+// MARK: - Shared SwiftUI Components
+import SwiftUI
+
+struct GBDialogueBar: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .font(.custom(GB.fontMono, size: 11))
+            .foregroundColor(.gbDarkest)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(Color.gbLightest)
+            .overlay(Rectangle().stroke(Color.gbDark, lineWidth: 1.5))
+    }
+}
+
+struct StatRowView: View {
+    let label: String
+    let value: Int
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Text(label)
+                .font(.custom(GB.font, size: 10))
+                .foregroundColor(.gbLight)
+                .frame(width: 56, alignment: .leading)
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Rectangle().fill(Color.gbDarkest).frame(height: 8)
+                    Rectangle().fill(Color.gbLightest)
+                        .frame(width: geo.size.width * CGFloat(value) / 99, height: 8)
+                }
+            }
+            .frame(height: 8)
+            Text("\(value)")
+                .font(.custom(GB.fontMono, size: 10))
+                .foregroundColor(.gbLightest)
+                .frame(width: 26, alignment: .trailing)
+        }
+    }
+}
+
+struct PixelPortrait: View {
+    let index: Int
+    let role: Role
+
+    private let palette: [Color] = [.gbDark, .gbLight, .gbLightest, .gbDarkest, .gbDark]
+
+    var body: some View {
+        ZStack {
+            palette[index % palette.count]
+            VStack(spacing: 0) {
+                Spacer()
+                ZStack {
+                    Rectangle()
+                        .fill(Color.gbLightest)
+                        .frame(width: 52, height: 60)
+                        .overlay(Rectangle().stroke(Color.gbDarkest, lineWidth: 2))
+                    VStack(spacing: 8) {
+                        HStack(spacing: 12) {
+                            Rectangle().fill(Color.gbDarkest).frame(width: 8, height: 8)
+                            Rectangle().fill(Color.gbDarkest).frame(width: 8, height: 8)
+                        }
+                        Rectangle().fill(Color.gbDark).frame(width: 20, height: 4)
+                    }
+                    Text(role.abbreviation)
+                        .font(.custom(GB.fontMono, size: 7))
+                        .foregroundColor(.gbDark)
+                        .offset(y: 22)
+                }
+                Rectangle()
+                    .fill(palette[index % palette.count])
+                    .frame(width: 64, height: 26)
+                    .overlay(Rectangle().stroke(Color.gbDarkest, lineWidth: 1.5))
+            }
+        }
+        .overlay(Rectangle().stroke(Color.gbDarkest, lineWidth: 2))
+        .clipped()
+    }
+}
+
 // MARK: - Tile Types
 enum TileType: Int {
     case floor       = 0

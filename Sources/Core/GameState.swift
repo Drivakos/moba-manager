@@ -6,12 +6,13 @@ enum AppScreen {
     case title
     case teamSetup
     case overworld
-    case encounter
     case teamRoster
     case training
     case tactics
     case matchSim
-    case tournamentBracket
+    case tournamentBracket   // league view
+    case transferMarket
+    case finances
     case pauseMenu
     case loadGame
     case saveGame
@@ -49,21 +50,20 @@ final class GameState {
     var storyFlags: Set<String> = []
 
     // Economy
-    var funds: Int = 500
+    var funds: Int = 25_000
+    let facilityCostPerMatch: Int = 500
+
+    // League
+    var league: AmateurLeague = AmateurLeague.generate(chapter: 1)
+
+    // Persistent player database (set list, tracked status)
+    var playerDatabase: PlayerDatabase = PlayerDatabase.generate()
 
     // Pre-match tactic
     var selectedTactic: MatchTactic = .adapt
 
-    // Story dialogue queue (lines shown in overworld after events)
+    // Story dialogue queue
     var pendingStoryLines: [StoryLine] = []
-
-    // Encounter flow
-    var pendingRecruit: Player? = nil
-    var isEncountering: Bool = false
-
-    // Draft flow
-    var pendingDraftPool: [Player] = []
-    var isDrafting: Bool = false
 
     // Coach hire flow
     var pendingCoachPool: [Coach] = []
@@ -72,30 +72,51 @@ final class GameState {
     // Match flow
     var pendingMatch: MatchResult? = nil
     var activeOpponent: Team? = nil
-    var isInMatch: Bool = false
 
     // Convenience
-    var canRecruit: Bool { playerTeam.roster.count < 5 }
+    var canSign: Bool { playerTeam.roster.count < 5 }
 
-    func openDraft() {
-        // Prioritise missing roles (up to 2), fill rest randomly
-        let missing = Array(Set(Role.allCases).subtracting(playerTeam.coveredRoles).prefix(2))
-        var biases: [Role?] = missing.map { Optional($0) }
-        while biases.count < 3 { biases.append(nil) }
-        pendingDraftPool = biases.shuffled().map { Player.generate(bias: $0, chapter: chapter) }
-        isDrafting = true
+    var weeklyWages: Int {
+        let playerWages = playerTeam.roster.reduce(0) { $0 + $1.salary }
+        let coachWage  = playerTeam.coach != nil ? 600 : 0
+        return playerWages + coachWage + facilityCostPerMatch
     }
 
-    func pickDraftPlayer(_ player: Player) {
-        recruit(player)
-        pendingDraftPool = []
-        isDrafting = false
+    // MARK: - League
+
+    func initLeague() {
+        league = AmateurLeague.generate(chapter: chapter)
+        playerDatabase.distributeToAITeams(league.teams)
     }
 
-    func skipDraft() {
-        pendingDraftPool = []
-        isDrafting = false
+    func leagueOpponentTeam() -> Team? {
+        guard let opp = league.nextOpponent else { return nil }
+        return Team.generateOpponent(name: opp.name, chapter: chapter)
     }
+
+    func startLeagueMatch() {
+        guard let opp = leagueOpponentTeam() else { return }
+        activeOpponent = opp
+        screen = .tactics
+    }
+
+    // MARK: - Transfer Market
+
+    func signPlayer(_ player: Player) {
+        var p = player
+        p.isRecruited = true
+        playerTeam.roster.append(p)
+        playerDatabase.sign(id: player.id, byPlayer: true)
+        SaveManager.autosave(self)
+    }
+
+    func releasePlayer(id: UUID) {
+        playerTeam.roster.removeAll { $0.id == id }
+        playerDatabase.release(id: id)
+        SaveManager.autosave(self)
+    }
+
+    // MARK: - Coach
 
     func openCoachHire() {
         pendingCoachPool = (0..<3).map { _ in Coach.generate(chapter: chapter) }
@@ -114,29 +135,38 @@ final class GameState {
         SaveManager.autosave(self)
     }
 
-    func recruit(_ player: Player) {
-        var p = player
-        p.isRecruited = true
-        playerTeam.roster.append(p)
-        SaveManager.autosave(self)
-    }
-
-    func releasePlayer(id: UUID) {
-        playerTeam.roster.removeAll { $0.id == id }
-    }
+    // MARK: - Match Result
 
     func recordMatchResult(won: Bool, hasMVP: Bool = false) {
         if won { playerTeam.wins += 1 } else { playerTeam.losses += 1 }
         awardXP(amount: won ? 50 : 20)
-        funds += won ? (hasMVP ? 650 : 500) : 150
+
+        // League prize
+        let prize = won ? 5_000 : 1_500
+        funds += prize
+
+        // Deduct wages for this matchday
+        funds -= weeklyWages
+
+        // Advance the league
+        league.advanceMatchday(playerWon: won)
+
+        // New season when all matches done — redistribute AI rosters
+        if league.isSeasonOver {
+            league = AmateurLeague.generate(chapter: chapter)
+            playerDatabase.distributeToAITeams(league.teams)
+        }
+
         SaveManager.autosave(self)
     }
+
+    // MARK: - Training
 
     func trainStat(playerID: UUID, key: StatKey) {
         guard let idx = playerTeam.roster.firstIndex(where: { $0.id == playerID }) else { return }
         let p = playerTeam.roster[idx]
         let isPrimary = p.role.statBias == key
-        let cost = (isPrimary ? 200 : 150) + (p.level - 1) * 25
+        let cost = (isPrimary ? 600 : 450) + (p.level - 1) * 75
         guard funds >= cost else { return }
         funds -= cost
         switch key {
@@ -146,21 +176,22 @@ final class GameState {
         case .mental:    playerTeam.roster[idx].stats.mental    = min(99, p.stats.mental    + 3)
         case .stamina:   playerTeam.roster[idx].stats.stamina   = min(99, p.stats.stamina   + 3)
         }
+        playerDatabase.updatePlayerData(playerTeam.roster[idx])
     }
 
     func trainingCost(player: Player, key: StatKey) -> Int {
         let isPrimary = player.role.statBias == key
-        return (isPrimary ? 200 : 150) + (player.level - 1) * 25
+        return (isPrimary ? 600 : 450) + (player.level - 1) * 75
     }
+
+    // MARK: - XP / Levelling
 
     func awardXP(amount: Int) {
         for i in playerTeam.roster.indices {
             playerTeam.roster[i].xp += amount + Int.random(in: 0...10)
-            // Level up check
             while playerTeam.roster[i].xp >= playerTeam.roster[i].xpToNextLevel {
                 playerTeam.roster[i].xp -= playerTeam.roster[i].xpToNextLevel
                 playerTeam.roster[i].level += 1
-                // Boost a stat on level up based on potential
                 boostStats(index: i)
             }
         }
@@ -168,7 +199,7 @@ final class GameState {
 
     private func boostStats(index: Int) {
         let p = playerTeam.roster[index]
-        let boost = 2 + p.potential  // higher potential = bigger stat gains
+        let boost = 2 + p.potential
         let key = p.role.statBias
         switch key {
         case .mechanics: playerTeam.roster[index].stats.mechanics = min(99, p.stats.mechanics + boost)
@@ -179,12 +210,8 @@ final class GameState {
         }
     }
 
-    func setFlag(_ flag: String) {
-        storyFlags.insert(flag)
-    }
+    // MARK: - Story Flags
 
-    func hasFlag(_ flag: String) -> Bool {
-        storyFlags.contains(flag)
-    }
-
+    func setFlag(_ flag: String) { storyFlags.insert(flag) }
+    func hasFlag(_ flag: String) -> Bool { storyFlags.contains(flag) }
 }

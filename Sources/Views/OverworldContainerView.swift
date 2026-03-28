@@ -4,11 +4,8 @@ import SpriteKit
 struct OverworldContainerView: View {
     @Environment(GameState.self) var gameState
     @State private var scene: OverworldScene? = nil
-    @State private var rosterFull = false
 
     var body: some View {
-        @Bindable var gs = gameState
-        let teamFull = gameState.playerTeam.isFull
         ZStack {
             // SpriteKit game view
             if let scene {
@@ -16,21 +13,13 @@ struct OverworldContainerView: View {
                     .ignoresSafeArea()
             }
 
-            // Controls overlay
+            // D-pad controls
             VStack {
                 Spacer()
                 GameControlsView(
-                    onDirection: { dir in
-                        scene?.movePlayer(direction: dir)
-                    },
-                    onAButton: {
-                        // A = confirm / interact (advance dialogue if open)
-                        scene?.handleAButton()
-                    },
-                    onBButton: {
-                        // B = cancel / close dialogue
-                        scene?.handleBButton()
-                    }
+                    onDirection: { dir in scene?.movePlayer(direction: dir) },
+                    onAButton:   { scene?.handleAButton() },
+                    onBButton:   { scene?.handleBButton() }
                 )
             }
 
@@ -39,52 +28,11 @@ struct OverworldContainerView: View {
                 HStack {
                     Spacer()
                     VStack(spacing: 6) {
-                        Button {
-                            gameState.screen = .teamRoster
-                        } label: {
-                            Text("ROSTER")
-                                .font(.custom(GB.font, size: 11))
-                                .foregroundColor(.gbLightest)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
-                                .background(Color.gbDarkest)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 0)
-                                        .stroke(Color.gbLight, lineWidth: 1)
-                                )
-                        }
-                        Button {
-                            if teamFull {
-                                rosterFull = true
-                            } else {
-                                gameState.openDraft()
-                            }
-                        } label: {
-                            Text("DRAFT")
-                                .font(.custom(GB.font, size: 11))
-                                .foregroundColor(teamFull ? .gbDark : .gbLightest)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
-                                .background(Color.gbDarkest)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 0)
-                                        .stroke(teamFull ? Color.gbDarkest : Color.gbLight, lineWidth: 1)
-                                )
-                        }
-                        Button {
-                            gameState.screen = .saveGame
-                        } label: {
-                            Text("SAVE")
-                                .font(.custom(GB.font, size: 11))
-                                .foregroundColor(.gbLight)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
-                                .background(Color.gbDarkest)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 0)
-                                        .stroke(Color.gbDark, lineWidth: 1)
-                                )
-                        }
+                        menuButton("ROSTER")  { gameState.screen = .teamRoster }
+                        menuButton("MARKET")  { gameState.screen = .transferMarket }
+                        menuButton("LEAGUE")  { gameState.screen = .tournamentBracket }
+                        menuButton("BUDGET")  { gameState.screen = .finances }
+                        menuButton("SAVE")    { gameState.screen = .saveGame }
                     }
                     .padding(.trailing, 14)
                     .padding(.top, 48)
@@ -93,18 +41,9 @@ struct OverworldContainerView: View {
             }
         }
         .onAppear {
-            let s = OverworldScene(
-                size: UIScreen.main.bounds.size,
-                gameState: gameState
-            )
-            s.onEncounterTriggered = { recruit in
-                gameState.pendingRecruit = recruit
-                gameState.isEncountering = true
-            }
+            let s = OverworldScene(size: UIScreen.main.bounds.size, gameState: gameState)
             s.onEnterArena = {
-                if !gameState.playerTeam.roster.isEmpty {
-                    gameState.screen = .tournamentBracket
-                }
+                gameState.screen = .tournamentBracket
             }
             s.onEnterHQ = {
                 gameState.screen = .training
@@ -114,24 +53,20 @@ struct OverworldContainerView: View {
         .onChange(of: gameState.screen) { _, _ in
             scene?.refreshHUD()
         }
-        .onChange(of: gameState.isEncountering) { _, encountering in
-            if !encountering {
-                // Encounter view dismissed — unblock the overworld
-                scene?.unblock()
-            }
-        }
-        .fullScreenCover(isPresented: $gs.isEncountering) {
-            EncounterView()
-                .environment(gameState)
-        }
-        .fullScreenCover(isPresented: $gs.isDrafting) {
-            DraftView()
-                .environment(gameState)
-        }
-        .alert("ROSTER FULL", isPresented: $rosterFull) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text("Release a player before drafting.")
+    }
+
+    private func menuButton(_ label: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(label)
+                .font(.custom(GB.font, size: 11))
+                .foregroundColor(.gbLightest)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(Color.gbDarkest)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 0)
+                        .stroke(Color.gbLight, lineWidth: 1)
+                )
         }
     }
 }

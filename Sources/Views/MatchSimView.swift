@@ -175,9 +175,7 @@ struct MatchSimView: View {
                             .font(.custom(GB.fontMono, size: 13))
                             .foregroundColor(.gbLight)
                     }
-                    Text(r.won
-                         ? "+$\(r.mvpName != nil ? 650 : 500)  +50 XP"
-                         : "+$150  +20 XP")
+                    Text(r.won ? "+$5,000  +50 XP" : "+$1,500  +20 XP")
                         .font(.custom(GB.fontMono, size: 11))
                         .foregroundColor(.gbDark)
                 }
@@ -196,7 +194,6 @@ struct MatchSimView: View {
             Button {
                 let chapterBefore = gameState.chapter
                 gameState.recordMatchResult(won: r.won, hasMVP: r.mvpName != nil)
-                if r.won { gameState.chapter = min(gameState.chapter + 1, 3) }
                 gameState.pendingStoryLines = Story.postChapterDialogue(chapter: chapterBefore, won: r.won)
                 gameState.activeOpponent = nil
                 gameState.screen = .overworld

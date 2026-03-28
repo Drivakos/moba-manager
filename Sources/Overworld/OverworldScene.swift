@@ -3,7 +3,6 @@ import SpriteKit
 class OverworldScene: SKScene {
 
     // MARK: - Callbacks (set by OverworldContainerView)
-    var onEncounterTriggered: ((Player) -> Void)?
     var onEnterArena: (() -> Void)?
     var onEnterHQ: (() -> Void)?
 
@@ -171,7 +170,10 @@ class OverworldScene: SKScene {
         teamLbl.position = CGPoint(x: -size.width / 2 + 10, y: size.height / 2 - 23)
         hudNode.addChild(teamLbl)
 
-        let rosterLbl = SKLabelNode(text: "\(gs.playerTeam.roster.count)/5  $\(gs.funds)")
+        let fundsK = gs.funds / 1000
+        let fundsR = (gs.funds % 1000) / 100
+        let fundsStr = fundsR > 0 ? "$\(fundsK).\(fundsR)K" : "$\(fundsK)K"
+        let rosterLbl = SKLabelNode(text: "\(gs.playerTeam.roster.count)/5  \(fundsStr)")
         rosterLbl.fontName = GB.font
         rosterLbl.fontSize = 11
         rosterLbl.fontColor = .gbLight
@@ -242,34 +244,9 @@ class OverworldScene: SKScene {
 
         playerNode.run(move) { [weak self] in
             self?.isMoving = false
-            self?.checkEncounter(tile: tile)
         }
 
         centerCamera(animated: true)
-    }
-
-    // MARK: - Encounter
-    private func checkEncounter(tile: TileType) {
-        guard tile.isEncounterZone else { return }
-        guard Double.random(in: 0...1) < tile.encounterChance else { return }
-        guard gameState?.canRecruit == true else {
-            showDialogue(text: "Your team roster is full! Head to the Arena to compete.", speaker: "!") { [weak self] in
-                self?.isBlocked = false
-                self?.dialogueBox.hide()
-            }
-            return
-        }
-
-        let chapter = gameState?.chapter ?? 1
-        let recruit = Player.generate(chapter: chapter)
-
-        showDialogue(text: "A challenger appears! \(recruit.name), age \(recruit.age) — \(recruit.role.rawValue)! [TAP to meet them]", speaker: "!") { [weak self] in
-            self?.dialogueBox.hide()
-            // Keep isBlocked = true until encounter view closes
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self?.onEncounterTriggered?(recruit)
-            }
-        }
     }
 
     // MARK: - Button Handlers

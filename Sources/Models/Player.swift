@@ -95,14 +95,20 @@ struct Player: Identifiable, Codable {
     var role: Role
     var stats: PlayerStats
     var personality: Personality
-    var potential: Int     // 1–5 stars, hidden during encounter
+    var potential: Int     // 1–5 stars
     var catchphrase: String
     var isRecruited: Bool
     var portraitIndex: Int // 0–4, maps to sprite variant
     var level: Int
     var xp: Int
+    var salary: Int        // per-match wage cost
 
     var xpToNextLevel: Int { level * 80 }
+
+    static func salaryFor(overall: Int) -> Int {
+        // $200 base + $10 per OVR point above 20; roughly $300–$900 range
+        return 200 + max(0, overall - 20) * 10
+    }
 
     var starDisplay: String {
         String(repeating: "★", count: potential) + String(repeating: "☆", count: 5 - potential)
@@ -148,6 +154,7 @@ struct Player: Identifiable, Codable {
             "I've already beaten half the pros in scrims."
         ]
 
+        let overall = stats.overall
         return Player(
             id: UUID(),
             name: "\(firstNames.randomElement()!) \(lastNames.randomElement()!)",
@@ -161,7 +168,8 @@ struct Player: Identifiable, Codable {
             isRecruited: false,
             portraitIndex: Int.random(in: 0...4),
             level: 1,
-            xp: 0
+            xp: 0,
+            salary: salaryFor(overall: overall)
         )
     }
 }

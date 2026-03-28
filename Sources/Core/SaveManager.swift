@@ -8,6 +8,8 @@ struct SaveData: Codable {
     let playerPosition: TilePosition
     let managerName: String
     let funds: Int
+    let league: AmateurLeague
+    let playerDatabase: PlayerDatabase
 }
 
 // MARK: - Slot metadata (shown in the save/load screen)
@@ -61,7 +63,9 @@ enum SaveManager {
             storyFlags: gameState.storyFlags,
             playerPosition: gameState.playerPosition,
             managerName: gameState.managerName,
-            funds: gameState.funds
+            funds: gameState.funds,
+            league: gameState.league,
+            playerDatabase: gameState.playerDatabase
         )
         let meta = SaveSlot(
             id: slot,
@@ -91,13 +95,15 @@ enum SaveManager {
     static func load(slot: Int, into gameState: GameState) -> Bool {
         guard let meta = readSlot(slot) else { return false }
         let d = meta.payload
-        gameState.playerTeam    = d.playerTeam
-        gameState.chapter       = d.chapter
-        gameState.storyFlags    = d.storyFlags
-        gameState.playerPosition = d.playerPosition
-        gameState.managerName   = d.managerName
-        gameState.funds         = d.funds
-        gameState.screen        = .overworld
+        gameState.playerTeam         = d.playerTeam
+        gameState.chapter            = d.chapter
+        gameState.storyFlags         = d.storyFlags
+        gameState.playerPosition     = d.playerPosition
+        gameState.managerName        = d.managerName
+        gameState.funds              = d.funds
+        gameState.league             = d.league
+        gameState.playerDatabase     = d.playerDatabase
+        gameState.screen             = .overworld
         lastUsedSlot = slot
         return true
     }

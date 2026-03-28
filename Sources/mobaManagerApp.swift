@@ -34,11 +34,13 @@ struct RootView: View {
             case .tactics:
                 TacticsView()
             case .tournamentBracket:
-                TournamentBracketView()
+                LeagueView()
+            case .transferMarket:
+                TransferMarketView()
+            case .finances:
+                FinancesView()
             case .matchSim:
                 MatchSimView()
-            case .encounter:
-                OverworldContainerView()
             case .pauseMenu:
                 OverworldContainerView()
             case .loadGame:

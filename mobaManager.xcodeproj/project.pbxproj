@@ -19,10 +19,12 @@
 		27F3981B53C4222F6729C288 /* TournamentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE6A08EB6E1AA1D160DDB92 /* TournamentView.swift */; };
 		2AAE9790637EB5323D255A31 /* mobaManagerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89EA8865E8111CCC556AEDB0 /* mobaManagerApp.swift */; };
 		2F842B778241423E13E1D627 /* TacticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B991E81EECE5F1CE155F0FE /* TacticsView.swift */; };
+		31503012B02D724B40D4507A /* PlayerDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45031C8003C088EE6D91A12E /* PlayerDatabase.swift */; };
 		3798016BC0B6EC6EBAECC5C4 /* DraftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B15A24885F97601F566162D8 /* DraftView.swift */; };
 		3AC5BC71111A82413F0EA2FD /* OverworldContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 911B5CC0B1781F7B842F1C35 /* OverworldContainerView.swift */; };
 		4A13E65AD0FC9CB90B462B7C /* TitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E25533BF8487A006D1CE0D6D /* TitleView.swift */; };
 		4C93663472D7280346288DC6 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FD95CADD5D65CD0803DFA0F /* Constants.swift */; };
+		53875AADBCA661E0EA556FFB /* TransferMarketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C2EB77324CC08AA4FBE34C /* TransferMarketView.swift */; };
 		53F9CE9EE91F9BB21F2418D1 /* CoachHireView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4E35B467878BA3C0BBBF0B /* CoachHireView.swift */; };
 		5D7F6678BE0785C100750409 /* Match.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B3717BA823FE82EC997F0EE /* Match.swift */; };
 		602D0C432203D46F0C5CDC5D /* TeamRosterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 891B31C9FBFA4C07B461B4D2 /* TeamRosterView.swift */; };
@@ -33,6 +35,9 @@
 		7E945E0874569BB09A6B9C65 /* GameplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AF0CCCC001F8692F4882B95 /* GameplayKit.framework */; };
 		80D972F15EAE67DFD062F848 /* StoryEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEF0E4C55E35327B1A27EECC /* StoryEvents.swift */; };
 		91438A5406DC7FEFD4DE5C4F /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9772769B4734DFC2EF6F2D7 /* GameState.swift */; };
+		B0CB4A314E253D0C6A96F22C /* League.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8013C5BEC56B6A0C96360A46 /* League.swift */; };
+		B920B241B6F1AC3235A4A3A7 /* MatchMapScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABA4908A515E295231600B71 /* MatchMapScene.swift */; };
+		C1E65EC2061CC66F31FFF6F9 /* FinancesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4C1A79A3E9532826AC52A6 /* FinancesView.swift */; };
 		CA7D9586080FE9D70EFBD645 /* TrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F8E79075E4A3961984D52AD /* TrainingView.swift */; };
 		D7AE648C634A3C7A80EC4B03 /* EncounterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E82616ABCC41600F80332B8 /* EncounterView.swift */; };
 		E8B3B1C1818394BF58EBADD7 /* MapData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB9C8E622E25D4E8FD20CA14 /* MapData.swift */; };
@@ -42,26 +47,31 @@
 		0AF0CCCC001F8692F4882B95 /* GameplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameplayKit.framework; path = System/Library/Frameworks/GameplayKit.framework; sourceTree = SDKROOT; };
 		159B468DC8271A5A68FCF42B /* MatchSimView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchSimView.swift; sourceTree = "<group>"; };
 		1BF0AC6A36B75E49926EFE20 /* CharacterNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterNode.swift; sourceTree = "<group>"; };
+		1E4C1A79A3E9532826AC52A6 /* FinancesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinancesView.swift; sourceTree = "<group>"; };
 		2B3717BA823FE82EC997F0EE /* Match.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Match.swift; sourceTree = "<group>"; };
 		31661A9DC6040D2761104601 /* NPCNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NPCNode.swift; sourceTree = "<group>"; };
 		31B969642307738B8F88F28F /* OverworldScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverworldScene.swift; sourceTree = "<group>"; };
 		3E82616ABCC41600F80332B8 /* EncounterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterView.swift; sourceTree = "<group>"; };
 		3FD95CADD5D65CD0803DFA0F /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		447D14BB6639D0F43E4DE390 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		45031C8003C088EE6D91A12E /* PlayerDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerDatabase.swift; sourceTree = "<group>"; };
 		4C4E35B467878BA3C0BBBF0B /* CoachHireView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachHireView.swift; sourceTree = "<group>"; };
 		4E44E521DDDB53AE6EBA4435 /* SaveLoadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveLoadView.swift; sourceTree = "<group>"; };
 		50213250654624266225021B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		6BE6A08EB6E1AA1D160DDB92 /* TournamentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TournamentView.swift; sourceTree = "<group>"; };
 		7B991E81EECE5F1CE155F0FE /* TacticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TacticsView.swift; sourceTree = "<group>"; };
 		7F8E79075E4A3961984D52AD /* TrainingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingView.swift; sourceTree = "<group>"; };
+		8013C5BEC56B6A0C96360A46 /* League.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = League.swift; sourceTree = "<group>"; };
 		84E12CF40A30EBA41EF169B9 /* SaveManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveManager.swift; sourceTree = "<group>"; };
 		891B31C9FBFA4C07B461B4D2 /* TeamRosterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamRosterView.swift; sourceTree = "<group>"; };
 		89EA8865E8111CCC556AEDB0 /* mobaManagerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mobaManagerApp.swift; sourceTree = "<group>"; };
 		8FFA3EB59B9C88BCDBCF68CC /* DialogueBoxNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogueBoxNode.swift; sourceTree = "<group>"; };
 		911B5CC0B1781F7B842F1C35 /* OverworldContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverworldContainerView.swift; sourceTree = "<group>"; };
+		91C2EB77324CC08AA4FBE34C /* TransferMarketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferMarketView.swift; sourceTree = "<group>"; };
 		96E3D8C27728060AF2D44F77 /* Team.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Team.swift; sourceTree = "<group>"; };
 		AA2598FE048AB70EEA2FF68E /* TeamSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamSetupView.swift; sourceTree = "<group>"; };
 		AB9C8E622E25D4E8FD20CA14 /* MapData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapData.swift; sourceTree = "<group>"; };
+		ABA4908A515E295231600B71 /* MatchMapScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchMapScene.swift; sourceTree = "<group>"; };
 		B15A24885F97601F566162D8 /* DraftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftView.swift; sourceTree = "<group>"; };
 		BE9F9064E07ED7EAE6A379E7 /* DPadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DPadView.swift; sourceTree = "<group>"; };
 		C35A4635FD008B2DD675F127 /* SpriteKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpriteKit.framework; path = System/Library/Frameworks/SpriteKit.framework; sourceTree = SDKROOT; };
@@ -113,6 +123,7 @@
 				1BF0AC6A36B75E49926EFE20 /* CharacterNode.swift */,
 				8FFA3EB59B9C88BCDBCF68CC /* DialogueBoxNode.swift */,
 				AB9C8E622E25D4E8FD20CA14 /* MapData.swift */,
+				ABA4908A515E295231600B71 /* MatchMapScene.swift */,
 				31661A9DC6040D2761104601 /* NPCNode.swift */,
 				31B969642307738B8F88F28F /* OverworldScene.swift */,
 			);
@@ -126,6 +137,7 @@
 				BE9F9064E07ED7EAE6A379E7 /* DPadView.swift */,
 				B15A24885F97601F566162D8 /* DraftView.swift */,
 				3E82616ABCC41600F80332B8 /* EncounterView.swift */,
+				1E4C1A79A3E9532826AC52A6 /* FinancesView.swift */,
 				159B468DC8271A5A68FCF42B /* MatchSimView.swift */,
 				911B5CC0B1781F7B842F1C35 /* OverworldContainerView.swift */,
 				4E44E521DDDB53AE6EBA4435 /* SaveLoadView.swift */,
@@ -135,6 +147,7 @@
 				E25533BF8487A006D1CE0D6D /* TitleView.swift */,
 				6BE6A08EB6E1AA1D160DDB92 /* TournamentView.swift */,
 				7F8E79075E4A3961984D52AD /* TrainingView.swift */,
+				91C2EB77324CC08AA4FBE34C /* TransferMarketView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -162,8 +175,10 @@
 			isa = PBXGroup;
 			children = (
 				D25B52C9F89C89D4384F3DE0 /* Coach.swift */,
+				8013C5BEC56B6A0C96360A46 /* League.swift */,
 				2B3717BA823FE82EC997F0EE /* Match.swift */,
 				447D14BB6639D0F43E4DE390 /* Player.swift */,
+				45031C8003C088EE6D91A12E /* PlayerDatabase.swift */,
 				FEF0E4C55E35327B1A27EECC /* StoryEvents.swift */,
 				96E3D8C27728060AF2D44F77 /* Team.swift */,
 			);
@@ -242,14 +257,18 @@
 				0EBAF2FCBD8568B7D10F5DB0 /* DialogueBoxNode.swift in Sources */,
 				3798016BC0B6EC6EBAECC5C4 /* DraftView.swift in Sources */,
 				D7AE648C634A3C7A80EC4B03 /* EncounterView.swift in Sources */,
+				C1E65EC2061CC66F31FFF6F9 /* FinancesView.swift in Sources */,
 				91438A5406DC7FEFD4DE5C4F /* GameState.swift in Sources */,
+				B0CB4A314E253D0C6A96F22C /* League.swift in Sources */,
 				E8B3B1C1818394BF58EBADD7 /* MapData.swift in Sources */,
 				5D7F6678BE0785C100750409 /* Match.swift in Sources */,
+				B920B241B6F1AC3235A4A3A7 /* MatchMapScene.swift in Sources */,
 				04E2AFDDB457D9E71E09F562 /* MatchSimView.swift in Sources */,
 				08633D2A69F73C7146987338 /* NPCNode.swift in Sources */,
 				3AC5BC71111A82413F0EA2FD /* OverworldContainerView.swift in Sources */,
 				0A08A1AAE36A96B6D090B1DD /* OverworldScene.swift in Sources */,
 				04BCB041370AA93490E98D05 /* Player.swift in Sources */,
+				31503012B02D724B40D4507A /* PlayerDatabase.swift in Sources */,
 				6DE144DE919FDE3F23E91D14 /* SaveLoadView.swift in Sources */,
 				142ED759B3E3E71B21D635EB /* SaveManager.swift in Sources */,
 				80D972F15EAE67DFD062F848 /* StoryEvents.swift in Sources */,
@@ -260,6 +279,7 @@
 				4A13E65AD0FC9CB90B462B7C /* TitleView.swift in Sources */,
 				27F3981B53C4222F6729C288 /* TournamentView.swift in Sources */,
 				CA7D9586080FE9D70EFBD645 /* TrainingView.swift in Sources */,
+				53875AADBCA661E0EA556FFB /* TransferMarketView.swift in Sources */,
 				2AAE9790637EB5323D255A31 /* mobaManagerApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
