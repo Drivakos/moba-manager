@@ -84,6 +84,17 @@ enum Personality: String, CaseIterable, Codable {
         case .consistent:  return "Never tilts. Steady performer every match."
         }
     }
+
+    /// A player's second natural strength, alongside their role's stat bias.
+    var secondaryStat: StatKey {
+        switch self {
+        case .aggressive:  return .mechanics
+        case .analytical:  return .gameSense
+        case .charismatic: return .teamwork
+        case .introverted: return .mental
+        case .consistent:  return .stamina
+        }
+    }
 }
 
 // MARK: - Player

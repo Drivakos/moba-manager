@@ -47,6 +47,10 @@ struct RootView: View {
                 SaveLoadView(mode: .load)
             case .saveGame:
                 SaveLoadView(mode: .save)
+            case .journey:
+                JourneyView()
+            case .gameOver:
+                GameOverView()
             }
         }
     }

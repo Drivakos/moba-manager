@@ -16,6 +16,7 @@ struct FinancesView: View {
                         expensesCard
                         incomeCard
                         rosterWagesCard
+                        ledgerCard
                     }
                     .padding(.horizontal, 12)
                     .padding(.top, 14)
@@ -89,11 +90,11 @@ struct FinancesView: View {
     var incomeCard: some View {
         VStack(spacing: 0) {
             GBSectionLabel(text: "Prize Money — Amateur League")
-            incomeRow("MATCH WIN",              amount: 5_000)
-            incomeRow("MATCH LOSS",             amount: 1_500)
+            incomeRow("MATCH WIN",              amount: gameState.matchPrize(won: true))
+            incomeRow("MATCH LOSS",             amount: gameState.matchPrize(won: false))
             Rectangle().fill(Color.gbDark.opacity(0.5)).frame(height: 1).padding(.horizontal, 12)
-            incomeRow("NET  WIN  (after wages)", amount: 5_000 - gameState.weeklyWages)
-            incomeRow("NET  LOSS (after wages)", amount: 1_500 - gameState.weeklyWages)
+            incomeRow("NET  WIN  (after wages)", amount: gameState.matchPrize(won: true) - gameState.weeklyWages)
+            incomeRow("NET  LOSS (after wages)", amount: gameState.matchPrize(won: false) - gameState.weeklyWages)
         }
         .overlay(Rectangle().stroke(Color.gbDark, lineWidth: 1))
     }
@@ -175,6 +176,44 @@ struct FinancesView: View {
                 }
                 .background(Color.gbDarkest)
                 .overlay(Rectangle().stroke(Color.gbDark, lineWidth: 0.5), alignment: .top)
+            }
+        }
+        .overlay(Rectangle().stroke(Color.gbDark, lineWidth: 1))
+    }
+
+    // MARK: - Ledger
+    var ledgerCard: some View {
+        VStack(spacing: 0) {
+            GBSectionLabel(text: "Recent Transactions")
+
+            if gameState.ledger.isEmpty {
+                Text("No transactions yet.")
+                    .font(.custom(GB.fontMono, size: 11))
+                    .foregroundColor(.gbDark)
+                    .padding(16)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.gbDarkest)
+            } else {
+                ForEach(Array(gameState.ledger.prefix(14))) { entry in
+                    HStack(spacing: 8) {
+                        Text(entry.day == 0 ? "--" : "D\(entry.day)")
+                            .font(.custom(GB.fontMono, size: 9))
+                            .foregroundColor(.gbDark)
+                            .frame(width: 26, alignment: .leading)
+                        Text(entry.label)
+                            .font(.custom(GB.fontMono, size: 10))
+                            .foregroundColor(.gbLight)
+                            .lineLimit(1)
+                        Spacer(minLength: 6)
+                        Text(entry.amount >= 0 ? "+$\(entry.amount)" : "−$\(abs(entry.amount))")
+                            .font(.custom(GB.font, size: 12))
+                            .foregroundColor(entry.amount >= 0 ? .gbLightest : .gbDark)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 7)
+                    .background(Color.gbDarkest)
+                    .overlay(Rectangle().stroke(Color.gbDarkest.opacity(0.6), lineWidth: 0.5))
+                }
             }
         }
         .overlay(Rectangle().stroke(Color.gbDark, lineWidth: 1))
