@@ -86,13 +86,16 @@ struct TitleView: View {
 
                 // ── BUTTONS ──
                 VStack(spacing: 10) {
-                    TitleButton(label: "▶  NEW GAME") {
-                        gameState.screen = .teamSetup
-                    }
                     if SaveManager.hasAnySave() {
+                        TitleButton(label: "▶  CONTINUE") {
+                            SaveManager.continueLast(into: gameState)
+                        }
                         TitleButton(label: "◈  LOAD GAME", filled: false) {
                             gameState.screen = .loadGame
                         }
+                    }
+                    TitleButton(label: "✚  NEW GAME", filled: !SaveManager.hasAnySave()) {
+                        gameState.screen = .teamSetup
                     }
                 }
                 .opacity(appeared ? 1 : 0)

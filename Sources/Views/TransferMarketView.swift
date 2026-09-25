@@ -76,7 +76,7 @@ struct TransferMarketView: View {
             Button("CANCEL", role: .cancel) { confirmPlayer = nil }
         } message: {
             if let p = confirmPlayer {
-                Text("\(p.name) — $\(p.salary)/match\nRoster slots: \(gameState.playerTeam.roster.count)/5")
+                Text("\(p.name) — $\(p.salary)/match\nSigning fee: $\u{2009}\(GameState.signingFee(for: p))\nRoster slots: \(gameState.playerTeam.roster.count)/5")
             }
         }
     }
@@ -172,7 +172,8 @@ struct TransferMarketView: View {
     func playerCard(_ record: PlayerRecord) -> some View {
         let player = record.player
         let isFree = record.status.isFree
-        let canSign = isFree && gameState.canSign
+        let fee = GameState.signingFee(for: player)
+        let canSign = isFree && gameState.canSign && gameState.funds >= fee
 
         return HStack(spacing: 0) {
             // Role color accent strip
@@ -252,7 +253,7 @@ struct TransferMarketView: View {
                         Button {
                             if canSign { confirmPlayer = player }
                         } label: {
-                            Text(gameState.canSign ? "SIGN" : "FULL")
+                            Text(gameState.canSign ? (canSign ? "SIGN" : "NO $") : "FULL")
                                 .font(.custom(GB.font, size: 10))
                                 .foregroundColor(canSign ? .gbDarkest : .gbDark)
                                 .frame(width: 44)

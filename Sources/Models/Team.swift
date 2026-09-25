@@ -35,22 +35,59 @@ struct Team: Codable, Identifiable {
         return max(0, bonus)
     }
 
-    // MARK: - Generate opponent team
-    static func generateOpponent(name: String, chapter: Int) -> Team {
-        // Scale opponent size with chapter: ch1=3 players, ch2=4, ch3=5
-        let rosterSize = min(3 + (chapter - 1), 5)
-        let roles = Role.allCases.shuffled().prefix(rosterSize)
-        let roster = roles.map { Player.generate(bias: $0, chapter: max(1, chapter)) }
-        // Opponents only get a coach from chapter 2 onward
-        let coach = chapter >= 2 ? Coach.generate(chapter: max(1, chapter)) : nil
-        return Team(
+    // MARK: - Opponent teams
+
+    /// Legal AI lineup: exactly one player per role, filled from `roster` where
+    /// possible and topped up with role-appropriate generated players.
+    func filledToFive() -> Team {
+        var lineup: [Player] = []
+        var used: Set<UUID> = []
+        for role in Role.allCases {
+            if let existing = roster.first(where: { $0.role == role && !used.contains($0.id) }) {
+                lineup.append(existing)
+                used.insert(existing.id)
+            } else {
+                lineup.append(Player.generate(bias: role, chapter: 1))
+            }
+        }
+        var copy = self
+        copy.roster = lineup
+        return copy
+    }
+
+    /// Builds a plausible league opponent: prefers the AI-signed squad from the
+    /// player database, otherwise a role-complete generated lineup scaled to `chapter`.
+    static func leagueOpponent(
+        name: String,
+        averageOverall: Int,
+        chapter: Int,
+        squad: [Player]
+    ) -> Team {
+        var team = Team(
             id: UUID(),
             name: name,
-            roster: roster,
-            coach: coach,
-            wins: Int.random(in: 1...5),
-            losses: Int.random(in: 1...4)
+            roster: squad,
+            coach: chapter >= 2 ? Coach.generate(chapter: max(1, chapter)) : nil,
+            wins: 0,
+            losses: 0
         )
+        team = team.filledToFive()
+
+        // Keep generated fill-ins close to the team's advertised strength.
+        team.roster = team.roster.map { player in
+            var p = player
+            while p.stats.overall < averageOverall - 8 || p.stats.overall > averageOverall + 8 {
+                let drift = (p.stats.overall < averageOverall) ? 2 : -2
+                p.stats.mechanics = min(99, max(15, p.stats.mechanics + drift))
+                p.stats.gameSense = min(99, max(15, p.stats.gameSense + drift))
+                p.stats.teamwork  = min(99, max(15, p.stats.teamwork  + drift))
+                p.stats.mental    = min(99, max(15, p.stats.mental    + drift))
+                p.stats.stamina   = min(99, max(15, p.stats.stamina   + drift))
+                p.salary = Player.salaryFor(overall: p.stats.overall)
+            }
+            return p
+        }
+        return team
     }
 
     static var empty: Team {

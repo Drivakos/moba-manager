@@ -64,6 +64,33 @@ enum Story {
         }
     }
 
+    // MARK: - Season outcome
+
+    /// Shown when the player finishes top two and earns a place in the next chapter.
+    static func chapterAdvance(from chapter: Int) -> [StoryLine] {
+        [
+            StoryLine(speaker: "REEVES", text: "Top two. You qualified for Chapter \(chapter + 1)."),
+            StoryLine(speaker: "AXIOM",  text: "So you're climbing after all. Don't get comfortable — the elite play here."),
+            StoryLine(speaker: "REEVES", text: "New league, tougher orgs. Roster stays with you — take them all the way."),
+        ]
+    }
+
+    /// Failing to qualify: replay the chapter with a reset record.
+    static func missedPlayoffs(chapter: Int) -> [StoryLine] {
+        [
+            StoryLine(speaker: "REEVES", text: "Top two needed. We didn't make it — the board has reset the season."),
+            StoryLine(speaker: "REEVES", text: "Same chapter, fresh league. Train up and try again. I still believe in this squad."),
+        ]
+    }
+
+    /// Won the Grand Final at chapter 3.
+    static let ending: [StoryLine] = [
+        StoryLine(speaker: "REEVES", text: "You built this from nothing. Five rookies scouted off the street — and now a title."),
+        StoryLine(speaker: "AXIOM",  text: "...I underestimated you. Never again. But the belt is yours. Hold it."),
+        StoryLine(speaker: "REEVES", text: "Amateur League champions. The Grand Finals are coming home with you, coach."),
+        StoryLine(speaker: "REEVES", text: "── THE END ──  Congratulations. Your name is in the history books."),
+    ]
+
     // MARK: - NPC locations
     static let npcs: [NPCData] = [
         NPCData(

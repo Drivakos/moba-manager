@@ -124,12 +124,12 @@ struct MatchSimView: View {
                     .foregroundColor(.gbLightest)
                 Spacer()
                 if let r = result {
-                    Text("\(r.playerScore) — \(r.opponentScore)")
+                    Text("\(r.gamesWon) — \(r.gamesLost)")
                         .font(.custom(GB.font, size: 18))
                         .foregroundColor(.gbLightest)
                 } else {
-                    Text("• • •")
-                        .font(.custom(GB.font, size: 14))
+                    Text("BEST OF 3")
+                        .font(.custom(GB.font, size: 13))
                         .foregroundColor(.gbLight)
                 }
                 Spacer()
@@ -197,7 +197,7 @@ struct MatchSimView: View {
                         }
 
                         HStack(spacing: 16) {
-                            Label(r.won ? "+$5,000" : "+$1,500", systemImage: "dollarsign")
+                            Label(prizeLabel(r), systemImage: "dollarsign")
                             Label(r.won ? "+50 XP" : "+20 XP", systemImage: "bolt.fill")
                         }
                         .font(.custom(GB.fontMono, size: 10))
@@ -215,7 +215,7 @@ struct MatchSimView: View {
                             .foregroundColor(.gbLight)
                             .frame(maxWidth: .infinity, alignment: .trailing)
                             .padding(.trailing, 10)
-                        Text("\(r.playerScore) — \(r.opponentScore)")
+                        Text("\(r.gamesWon) — \(r.gamesLost)")
                             .font(.custom(GB.font, size: 20))
                             .foregroundColor(.gbLightest)
                         Text(opponent.name.uppercased())
@@ -240,9 +240,17 @@ struct MatchSimView: View {
 
             Button {
                 let chapterBefore = gameState.chapter
-                gameState.recordMatchResult(won: r.won, hasMVP: r.mvpName != nil)
-                gameState.pendingStoryLines = Story.postChapterDialogue(chapter: chapterBefore, won: r.won)
-                gameState.activeOpponent = nil
+                gameState.resolveActiveMatch(won: r.won, hasMVP: r.mvpName != nil)
+
+                if gameState.isCareerWon {
+                    // Season ended with the title (or elimination) — show the wrap-up.
+                    if gameState.pendingChapterResult == nil {
+                        gameState.pendingChapterResult = .champion
+                    }
+                    gameState.pendingStoryLines = Story.ending
+                } else if gameState.pendingChapterResult == nil {
+                    gameState.pendingStoryLines = Story.postChapterDialogue(chapter: chapterBefore, won: r.won)
+                }
                 gameState.screen = .overworld
             } label: {
                 Text("CONTINUE  ▶")
@@ -262,6 +270,14 @@ struct MatchSimView: View {
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
         }
+    }
+
+    /// Prize money shown on the result screen, matching GameState's payout maths.
+    private func prizeLabel(_ r: MatchResult) -> String {
+        let chapter = gameState.chapter
+        var prize = r.won ? (4_000 + chapter * 1_500) : (1_000 + chapter * 500)
+        if r.won && gameState.activeOpponentIsBoss { prize += 15_000 }
+        return "+$\(prize)"
     }
 
     // MARK: - Intro Animation
@@ -303,19 +319,20 @@ struct MatchSimView: View {
 
         let phases: [MatchPhase] = MatchPhase.allCases
         let eventGroups = Dictionary(grouping: r.events, by: \.phase)
-        let phaseWins = r.phaseResults  // [early, mid, late]
+        let outcomes = r.phaseOutcomes  // [early, mid, late]
 
         var phaseStart = 0.4  // start first phase slightly after map appears
 
         for (idx, phase) in phases.enumerated() {
             let phaseName = phase.rawValue
             let events    = eventGroups[phase] ?? []
-            let playerWon = idx < phaseWins.count ? phaseWins[idx] : false
+            let outcome   = idx < outcomes.count ? outcomes[idx] : .draw
+            let playerWon = outcome == .win
             let t         = phaseStart
 
             // Show phase label
             DispatchQueue.main.asyncAfter(deadline: .now() + t - 0.1) {
-                withAnimation { currentPhaseLabel = "▶ \(phaseName)" }
+                withAnimation { currentPhaseLabel = "▶ \(phaseName)  ·  \(outcome.label)" }
             }
 
             // Fire map animation

@@ -25,6 +25,21 @@ struct AmateurLeague: Codable {
         return teams[matchday]
     }
 
+    /// Finishing in the top two advances the player to the next chapter.
+    func playerQualified(playerWins: Int, playerLosses: Int) -> Bool {
+        playerRank(playerWins: playerWins, playerLosses: playerLosses) <= 2
+    }
+
+    func playerRank(playerWins: Int, playerLosses: Int, playerTeamName: String = "") -> Int {
+        let rows = standings(
+            playerWins: playerWins,
+            playerLosses: playerLosses,
+            playerTeamName: playerTeamName
+        )
+        // The player's row is the only one flagged isPlayer.
+        return (rows.firstIndex(where: { $0.isPlayer }) ?? rows.count - 1) + 1
+    }
+
     // Call after each player match to simulate the rest of the matchday
     mutating func advanceMatchday(playerWon: Bool) {
         if playerWon {
@@ -57,11 +72,19 @@ struct AmateurLeague: Codable {
     }
 
     // Factory – used on first game start and new season
-    static func generate(chapter: Int) -> AmateurLeague {
+    //
+    // Team strength grows with the chapter. Once the player has a squad, the
+    // league is also calibrated against `referenceOverall` (the player's average
+    // overall) so each season stays competitive without becoming a walkover:
+    // the weakest AI sits a few points below the player and the strongest a few
+    // above, so building a stronger roster still pays off.
+    static func generate(chapter: Int, referenceOverall: Int = 0) -> AmateurLeague {
         let names = ["Shadow Force", "Pixel Raiders", "Ghost Protocol", "Iron Surge", "Neon Wolves"]
-        let baseOvr = 30 + chapter * 8
+        let chapterBase = 44 + chapter * 10
+        let playerBase = referenceOverall > 0 ? referenceOverall - 4 : 0
+        let baseOvr = max(chapterBase, playerBase)
         let teams = names.enumerated().map { i, name in
-            LeagueTeam(name: name, wins: 0, losses: 0, averageOverall: baseOvr + i * 2)
+            LeagueTeam(name: name, wins: 0, losses: 0, averageOverall: baseOvr + i * 3)
         }
         return AmateurLeague(teams: teams)
     }

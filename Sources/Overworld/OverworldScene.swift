@@ -5,6 +5,8 @@ class OverworldScene: SKScene {
     // MARK: - Callbacks (set by OverworldContainerView)
     var onEnterArena: (() -> Void)?
     var onEnterHQ: (() -> Void)?
+    /// Fired once a queued story dialogue (e.g. season wrap-up) finishes.
+    var onStoryComplete: (() -> Void)?
 
     // MARK: - Properties
     private weak var gameState: GameState?
@@ -123,6 +125,8 @@ class OverworldScene: SKScene {
             dialogueBox.hide()
             storyCompletion?()
             storyCompletion = nil
+            onStoryComplete?()
+            onStoryComplete = nil
             return
         }
         let line = storyQueue.removeFirst()
@@ -267,6 +271,9 @@ class OverworldScene: SKScene {
         isBlocked = false
         dialogueBox.hide()
     }
+
+    /// True while a multi-line story dialogue is still being shown.
+    var hasQueuedStory: Bool { !storyQueue.isEmpty || (isBlocked && dialogueBox.isVisible) }
 
     // MARK: - Dialogue Helper
     private func showDialogue(text: String, speaker: String, completion: @escaping () -> Void) {

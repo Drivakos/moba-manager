@@ -97,10 +97,11 @@ struct TrainingView: View {
             showFeedback("NOT ENOUGH FUNDS. Need $\(cost).")
             return
         }
+        let gain = gameState.trainingGain(player: player, key: key)
         gameState.trainStat(playerID: player.id, key: key)
         // Refresh selected player from roster
         selectedPlayer = gameState.playerTeam.roster.first { $0.id == player.id }
-        showFeedback("「\(player.tag)」\(key.rawValue) +3  •  -$\(cost)")
+        showFeedback("「\(player.tag)」\(key.rawValue) +\(gain)  •  -$\(cost)")
     }
 
     private func showFeedback(_ text: String) {
@@ -176,8 +177,10 @@ struct PlayerTrainingRow: View {
                             label: key.rawValue,
                             value: player.stats[key],
                             cost: gameState.trainingCost(player: player, key: key),
+                            gain: gameState.trainingGain(player: player, key: key),
                             canAfford: gameState.funds >= gameState.trainingCost(player: player, key: key),
-                            isPrimary: player.role.statBias == key
+                            priority: key == player.role.statBias ? .role
+                                : (key == player.personality.secondaryStat ? .personality : .none)
                         ) {
                             onTrain(key)
                         }
@@ -194,22 +197,23 @@ struct PlayerTrainingRow: View {
 
 // MARK: - Stat Train Row
 struct StatTrainRow: View {
+    enum Priority { case role, personality, none }
+
     let label: String
     let value: Int
     let cost: Int
+    let gain: Int
     let canAfford: Bool
-    let isPrimary: Bool
+    let priority: Priority
     let onTrain: () -> Void
 
     var body: some View {
         HStack(spacing: 8) {
             // Label + primary marker
             HStack(spacing: 3) {
-                if isPrimary {
-                    Text("★")
-                        .font(.custom(GB.fontMono, size: 9))
-                        .foregroundColor(.gbLightest)
-                }
+                Text(priority == .role ? "★" : (priority == .personality ? "·" : " "))
+                    .font(.custom(GB.fontMono, size: 9))
+                    .foregroundColor(priority == .role ? .gbLightest : .gbLight)
                 Text(label)
                     .font(.custom(GB.fontMono, size: 10))
                     .foregroundColor(.gbLight)
@@ -234,7 +238,7 @@ struct StatTrainRow: View {
 
             // Train button
             Button(action: onTrain) {
-                Text("+3 $\(cost)")
+                Text("+\(gain) $\(cost)")
                     .font(.custom(GB.font, size: 9))
                     .foregroundColor(canAfford ? .gbDarkest : .gbDark)
                     .padding(.horizontal, 6)

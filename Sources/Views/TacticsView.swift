@@ -13,7 +13,7 @@ struct TacticsView: View {
 
             VStack(spacing: 0) {
                 GBScreenHeader(
-                    title: "Tactics",
+                    title: gameState.activeOpponentIsBoss ? "Challenge" : "Tactics",
                     subtitle: "vs \(opponent.name)  ·  Chapter \(gameState.chapter)"
                 )
 

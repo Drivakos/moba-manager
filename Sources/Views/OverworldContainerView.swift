@@ -28,6 +28,7 @@ struct OverworldContainerView: View {
                 HStack {
                     Spacer()
                     VStack(spacing: 6) {
+                        menuButton("JOURNEY") { gameState.screen = .journey }
                         menuButton("ROSTER")  { gameState.screen = .teamRoster }
                         menuButton("MARKET")  { gameState.screen = .transferMarket }
                         menuButton("LEAGUE")  { gameState.screen = .tournamentBracket }
@@ -41,6 +42,9 @@ struct OverworldContainerView: View {
             }
         }
         .onAppear {
+            // Guard against SwiftUI re-running onAppear, which would swap in a
+            // second OverworldScene and reset the player to spawn.
+            guard scene == nil else { return }
             let s = OverworldScene(size: UIScreen.main.bounds.size, gameState: gameState)
             s.onEnterArena = {
                 gameState.screen = .tournamentBracket
@@ -48,10 +52,21 @@ struct OverworldContainerView: View {
             s.onEnterHQ = {
                 gameState.screen = .training
             }
+            s.onStoryComplete = { [weak scene] in
+                _ = scene
+                if gameState.pendingChapterResult != nil {
+                    gameState.screen = .gameOver
+                }
+            }
             self.scene = s
         }
-        .onChange(of: gameState.screen) { _, _ in
-            scene?.refreshHUD()
+        .onChange(of: gameState.pendingChapterResult) { _, result in
+            guard result != nil else { return }
+            // If a wrap-up dialogue is queued the overworld will play it first and
+            // hand off via onStoryComplete; otherwise go straight to the summary.
+            if (scene?.hasQueuedStory ?? false) == false {
+                gameState.screen = .gameOver
+            }
         }
     }
 

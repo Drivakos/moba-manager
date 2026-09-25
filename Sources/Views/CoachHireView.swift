@@ -66,6 +66,13 @@ struct CoachHireView: View {
         }
     }
 
+    /// Cost/label for the currently selected candidate.
+    var hireLabel: String {
+        guard let i = selectedIndex else { return "SELECT ONE FIRST" }
+        let cost = GameState.coachHireCost(for: pool[i])
+        return gameState.funds >= cost ? "HIRE  ·  $\(cost)  ✓" : "NEED $\(cost)"
+    }
+
     // MARK: - Action Bar
     var actionBar: some View {
         VStack(spacing: 0) {
@@ -93,7 +100,7 @@ struct CoachHireView: View {
                         dismiss()
                     }
                 } label: {
-                    Text(selectedIndex != nil ? "HIRE  ✓" : "SELECT ONE FIRST")
+                    Text(hireLabel)
                         .font(.custom(GB.font, size: 14))
                         .foregroundColor(selectedIndex != nil ? .gbDarkest : .gbDark)
                         .frame(maxWidth: .infinity)

@@ -10,6 +10,10 @@ struct SaveData: Codable {
     let funds: Int
     let league: AmateurLeague
     let playerDatabase: PlayerDatabase
+    var ledger: [Transaction] = []
+    var pendingChapterResult: ChapterReview? = nil
+    var seasonWins: Int = 0
+    var seasonLosses: Int = 0
 }
 
 // MARK: - Slot metadata (shown in the save/load screen)
@@ -57,16 +61,7 @@ enum SaveManager {
 
     // MARK: - Save
     static func save(gameState: GameState, slot: Int) {
-        let payload = SaveData(
-            playerTeam: gameState.playerTeam,
-            chapter: gameState.chapter,
-            storyFlags: gameState.storyFlags,
-            playerPosition: gameState.playerPosition,
-            managerName: gameState.managerName,
-            funds: gameState.funds,
-            league: gameState.league,
-            playerDatabase: gameState.playerDatabase
-        )
+        let payload = payload(for: gameState)
         let meta = SaveSlot(
             id: slot,
             teamName: gameState.playerTeam.name,
@@ -82,9 +77,27 @@ enum SaveManager {
             UserDefaults.standard.set(data, forKey: key(slot))
             lastUsedSlot = slot
         }
+        FranchiseStore.autosave(gameState)
     }
 
-    // MARK: - Auto-save to last used slot (or slot 1)
+    private static func payload(for gameState: GameState) -> SaveData {
+        SaveData(
+            playerTeam: gameState.playerTeam,
+            chapter: gameState.chapter,
+            storyFlags: gameState.storyFlags,
+            playerPosition: gameState.playerPosition,
+            managerName: gameState.managerName,
+            funds: gameState.funds,
+            league: gameState.league,
+            playerDatabase: gameState.playerDatabase,
+            ledger: gameState.ledger,
+            pendingChapterResult: gameState.pendingChapterResult,
+            seasonWins: gameState.seasonWins,
+            seasonLosses: gameState.seasonLosses
+        )
+    }
+
+    // MARK: - Auto-save to last used slot (or slot 1), plus the franchise store
     static func autosave(_ gameState: GameState) {
         let slot = lastUsedSlot > 0 ? lastUsedSlot : 1
         save(gameState: gameState, slot: slot)
@@ -94,18 +107,39 @@ enum SaveManager {
     @discardableResult
     static func load(slot: Int, into gameState: GameState) -> Bool {
         guard let meta = readSlot(slot) else { return false }
-        let d = meta.payload
-        gameState.playerTeam         = d.playerTeam
-        gameState.chapter            = d.chapter
-        gameState.storyFlags         = d.storyFlags
-        gameState.playerPosition     = d.playerPosition
-        gameState.managerName        = d.managerName
-        gameState.funds              = d.funds
-        gameState.league             = d.league
-        gameState.playerDatabase     = d.playerDatabase
-        gameState.screen             = .overworld
+        apply(meta.payload, to: gameState)
+        gameState.screen = .overworld
         lastUsedSlot = slot
         return true
+    }
+
+    /// Restores the last auto-saved career (used by CONTINUE on the title screen).
+    @discardableResult
+    static func continueLast(into gameState: GameState) -> Bool {
+        if let data = UserDefaults.standard.data(forKey: key(lastUsedSlot > 0 ? lastUsedSlot : 1)),
+           let meta = try? JSONDecoder().decode(SaveSlot.self, from: data) {
+            apply(meta.payload, to: gameState)
+            gameState.screen = .overworld
+            return true
+        }
+        guard FranchiseStore.load(into: gameState) else { return false }
+        gameState.screen = .overworld
+        return true
+    }
+
+    private static func apply(_ d: SaveData, to gameState: GameState) {
+        gameState.playerTeam          = d.playerTeam
+        gameState.chapter             = d.chapter
+        gameState.storyFlags          = d.storyFlags
+        gameState.playerPosition      = d.playerPosition
+        gameState.managerName         = d.managerName
+        gameState.funds               = d.funds
+        gameState.league              = d.league
+        gameState.playerDatabase      = d.playerDatabase
+        gameState.ledger              = d.ledger
+        gameState.pendingChapterResult = d.pendingChapterResult
+        gameState.seasonWins          = d.seasonWins
+        gameState.seasonLosses        = d.seasonLosses
     }
 
     // MARK: - Delete
