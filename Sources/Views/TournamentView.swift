@@ -14,6 +14,8 @@ struct LeagueView: View {
                     subtitle: "Season \(gameState.league.season)  —  Matchday \(gameState.league.matchday)/\(gameState.league.teams.count)"
                 )
 
+                objectiveBanner
+
                 ScrollView {
                     VStack(spacing: 14) {
                         standingsSection
@@ -27,6 +29,31 @@ struct LeagueView: View {
                 GBBackButton { gameState.screen = .overworld }
             }
         }
+    }
+
+    // MARK: - Objective Banner
+    var objectiveBanner: some View {
+        let rank = gameState.league.playerRank(
+            playerWins: gameState.seasonWins,
+            playerLosses: gameState.seasonLosses
+        )
+        let qualified = rank <= 2
+        return HStack(spacing: 8) {
+            Rectangle().fill(qualified ? Color.gbLightest : Color.gbLight).frame(width: 3, height: 14)
+            Text("GOAL: FINISH TOP 2  ·  YOU ARE #\(rank)")
+                .font(.custom(GB.fontMono, size: 10))
+                .foregroundColor(qualified ? .gbLightest : .gbLight)
+            Spacer()
+            if gameState.league.isSeasonOver {
+                Text("SEASON DONE")
+                    .font(.custom(GB.font, size: 9))
+                    .foregroundColor(.gbDark)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color.gbDark)
+        .overlay(Rectangle().stroke(Color.gbDarkest.opacity(0.5), lineWidth: 0.5), alignment: .bottom)
     }
 
     // MARK: - Standings
@@ -51,8 +78,8 @@ struct LeagueView: View {
             .background(Color.gbDark)
 
             let entries = gameState.league.standings(
-                playerWins: gameState.playerTeam.wins,
-                playerLosses: gameState.playerTeam.losses,
+                playerWins: gameState.seasonWins,
+                playerLosses: gameState.seasonLosses,
                 playerTeamName: gameState.playerTeam.name
             )
             ForEach(Array(entries.enumerated()), id: \.element.id) { rank, entry in
@@ -111,13 +138,13 @@ struct LeagueView: View {
                     // Prize info bar
                     HStack {
                         Spacer()
-                        Text("WIN  +$5,000")
+                        Text("WIN  +\(gameState.matchPrize(won: true))")
                             .font(.custom(GB.fontMono, size: 9))
                             .foregroundColor(.gbLight)
                         Text("·")
                             .font(.custom(GB.fontMono, size: 9))
                             .foregroundColor(.gbDark)
-                        Text("LOSS  +$1,500")
+                        Text("LOSS  +\(gameState.matchPrize(won: false))")
                             .font(.custom(GB.fontMono, size: 9))
                             .foregroundColor(.gbDark)
                         Spacer()
@@ -133,10 +160,10 @@ struct LeagueView: View {
                                 .font(.custom(GB.font, size: 13))
                                 .foregroundColor(.gbLightest)
                             HStack(spacing: 8) {
-                                Text("W \(gameState.playerTeam.wins)")
+                                Text("W \(gameState.seasonWins)")
                                     .font(.custom(GB.fontMono, size: 9))
                                     .foregroundColor(.gbLight)
-                                Text("L \(gameState.playerTeam.losses)")
+                                Text("L \(gameState.seasonLosses)")
                                     .font(.custom(GB.fontMono, size: 9))
                                     .foregroundColor(.gbDark)
                             }
@@ -189,10 +216,12 @@ struct LeagueView: View {
 
             } else {
                 VStack(spacing: 10) {
-                    Text("SEASON COMPLETE")
+                    Text(gameState.pendingChapterResult == .champion ? "CHAMPIONS" : "SEASON COMPLETE")
                         .font(.custom(GB.font, size: 18))
                         .foregroundColor(.gbLightest)
-                    Text("New season begins shortly.")
+                    Text(gameState.pendingChapterResult == nil
+                         ? "Check THE JOURNEY for what happens next."
+                         : "Your season has been decided.")
                         .font(.custom(GB.fontMono, size: 11))
                         .foregroundColor(.gbLight)
                 }

@@ -62,36 +62,57 @@ struct PlayerDatabase: Codable {
         records[idx].player = player
     }
 
-    // MARK: - AI Team Signing (called on league init)
-    mutating func distributeToAITeams(_ teams: [LeagueTeam]) {
-        // Release all AI-signed players first (fresh season)
-        for i in records.indices where !records[i].status.isFree {
+    // MARK: - AI Squad Assignment (called on league init / new season)
+
+    /// Signs a role-complete starting five for every AI team. Players are
+    /// distributed by strength rank: teams are ordered weakest-to-strongest and
+    /// each role's free agents are ordered weakest-to-strongest, then matched by
+    /// evenly spaced position. Greedy nearest-to-target assignment let the teams
+    /// processed first claim the players the marquee sides needed, so the
+    /// advertised strongest team ended up fielding leftovers.
+    mutating func assignSquads(to teams: [LeagueTeam]) {
+        // Fresh season: every AI-signed player returns to the free agent pool.
+        for i in records.indices {
             if case .signedByAI = records[i].status {
                 records[i].status = .freeAgent
             }
         }
 
-        // Sort free agents by OVR desc so better AI teams get better players
-        let sorted = records
-            .filter { $0.status.isFree }
-            .sorted { $0.player.stats.overall > $1.player.stats.overall }
+        let rankedTeams = teams.sorted { $0.averageOverall < $1.averageOverall }
+        guard !rankedTeams.isEmpty else { return }
 
-        // Each AI team gets 3 players, picking from OVR band matching their difficulty
-        var pool = sorted
-        for team in teams {
-            var picked = 0
-            var remaining: [PlayerRecord] = []
-            for record in pool {
-                if picked < 3 {
-                    if let idx = records.firstIndex(where: { $0.id == record.id }) {
-                        records[idx].status = .signedByAI(teamName: team.name)
-                    }
-                    picked += 1
+        for role in Role.allCases {
+            let ordered = records
+                .filter { $0.status.isFree && $0.player.role == role }
+                .sorted { $0.player.stats.overall < $1.player.stats.overall }
+            guard !ordered.isEmpty else { continue }
+
+            for (rank, team) in rankedTeams.enumerated() {
+                let pos: Int
+                if rankedTeams.count == 1 {
+                    pos = ordered.count / 2
                 } else {
-                    remaining.append(record)
+                    let spread = Double(rank) / Double(rankedTeams.count - 1)
+                    pos = Int((spread * Double(ordered.count - 1)).rounded())
                 }
+                // Nearest free candidate to this rank's position — re-read status
+                // each pick so already-claimed players are skipped.
+                let available = ordered.enumerated().filter { $0.element.status.isFree }
+                guard let pick = available.min(by: { abs($0.offset - pos) < abs($1.offset - pos) }),
+                      let idx = records.firstIndex(where: { $0.id == pick.element.id })
+                else { continue }
+                records[idx].status = .signedByAI(teamName: team.name)
             }
-            pool = remaining
+        }
+    }
+
+    /// Players currently signed to an AI team.
+    func squad(forTeamName name: String) -> [Player] {
+        records.compactMap { record in
+            if case .signedByAI(let team) = record.status, team == name {
+                return record.player
+            }
+            return nil
         }
     }
 
