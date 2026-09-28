@@ -125,6 +125,33 @@ struct Player: Identifiable, Codable {
         String(repeating: "★", count: potential) + String(repeating: "☆", count: 5 - potential)
     }
 
+    /// Returns a copy filling a different role slot, used when a roster is short
+    /// and the match simulation still needs five role-distinct units.
+    func withRole(_ role: Role) -> Player {
+        var copy = self
+        copy.role = role
+        return copy
+    }
+
+    /// Stand-in for an empty role slot so a short roster can still field a side.
+    static func blank(role: Role) -> Player {
+        let stats = PlayerStats(mechanics: 40, gameSense: 40, teamwork: 40, mental: 40, stamina: 40)
+        return Player(id: UUID(),
+                      name: "Walk-on",
+                      tag: "WALKON",
+                      age: 18,
+                      role: role,
+                      stats: stats,
+                      personality: .consistent,
+                      potential: 1,
+                      catchphrase: "Just happy to be here.",
+                      isRecruited: true,
+                      portraitIndex: 0,
+                      level: 1,
+                      xp: 0,
+                      salary: salaryFor(overall: stats.overall))
+    }
+
     // MARK: - Generator
     static func generate(bias: Role? = nil, chapter: Int = 1) -> Player {
         let role = bias ?? Role.allCases.randomElement()!
