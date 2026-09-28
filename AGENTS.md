@@ -48,6 +48,17 @@ harness that drives `GameState`/`MatchEngine` directly:
 - Season record reset on advancement, boss matches staying exhibition-only.
 - Economy ledger, training costs/gains, and save/load round trips.
 
+The dot-rift match simulation has its own harness, `Tools/SimHarness/main.swift`:
+
+```bash
+swiftc -swift-version 5 -o /tmp/sim/run \
+  Sources/Models/*.swift Tools/SimHarness/main.swift
+/tmp/sim/run
+```
+
+It asserts fielding, conclusion, determinism, skill monotonicity, positional
+fairness, objective contests, and tactic differentiation.
+
 Keep the harness in sync when changing match, league, economy, or save logic.
 
 ## Domain Rules That Are Easy To Get Wrong
@@ -71,6 +82,14 @@ Keep the harness in sync when changing match, league, economy, or save logic.
 - **The match plays all three phases.** Cap `gamesWon`/`gamesLost` at
   `MatchResult.gamesToWin` and award a tiebreak for drawn phases so the score is
   never level and never a 3-0 sweep.
+- **The rift map is symmetric under a reflection, not a rotation.** Spawn seats,
+  tower positions, and objective pits must use `(x, y) → (1 − y, 1 − x)` (the
+  anti-diagonal), which swaps the two bases in place. A 180° rotation looks
+  symmetric but maps top lane onto bot; since bot fields two units, that asymmetry
+  hands one side the match. Verify with the harness's positional-fairness check.
+- **The player's tactic boosts only the player's side.** `tacticMultiplier` takes a
+  side and applies the chosen tactic for the player, a neutral `.adapt` baseline
+  for the opponent. Applying it to both sides made the tactic choice meaningless.
 
 ## Style
 
